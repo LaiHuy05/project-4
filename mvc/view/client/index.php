@@ -1,5 +1,4 @@
 <?php
-session_start();
 include_once './query/san-pham.php';
 include_once './query/gio-hang.php';
 include_once './query/danh-muc.php';

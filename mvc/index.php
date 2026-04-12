@@ -1,19 +1,21 @@
 <?php
-$act = $_GET['act'] ?? 'client';
-$id = "";
-if (isset($_GET["id"])) {
-    $id = $_GET["id"];
-}
-switch ($act) {
-    case 'client':
+// mvc/index.php
+session_start(); 
 
-        include 'view/client/index.php';
-        break;
+$act = $_GET['act'] ?? 'client';
+
+switch ($act) {
     case 'admin':
-        include 'view/admin/index.php';
+        // Gọi file controller admin vừa tạo
+        include_once 'controller/admin/admin_controller.php'; 
+        break;
+    case 'client':
+        include 'view/client/index.php';
         break;
     case 'logout':
         include './view/client/login/logout.php';
         break;
+    default:
+        include 'view/client/index.php'; 
+        break;
 }
-// include 'view/client/home.php'
