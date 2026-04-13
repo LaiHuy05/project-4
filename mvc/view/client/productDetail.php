@@ -386,7 +386,7 @@ include "nav.php";
                 </main>
 
 
-                <form action>
+                <!-- <form action>
                     <div class="text-area">
                         <textarea
                             placeholder="Mời bạn thảo luận vui lòng nhập tiếng việt có dấu..."></textarea>
@@ -394,6 +394,17 @@ include "nav.php";
                     <div class="evulate-now">
                         <button>GỬI ĐÁNH GIÁ NGAY</button>
                     </div>
+                </form> -->
+                <form action="index.php" method="GET" style="margin-top: 15px;">
+                    <input type="hidden" name="client" value="addComment">
+                    <input type="hidden" name="iduser" value="<?= $iduser ?? '' ?>">
+                    <input type="hidden" name="idsp" value="<?= $id_sp ?? '' ?>">
+
+                    <textarea name="comment" rows="4" placeholder="Viết đánh giá của bạn..." style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; font-family: inherit; resize: vertical; box-sizing: border-box; margin-bottom: 10px; outline: none;"></textarea>
+
+                    <button type="submit" style="padding: 10px 20px; background-color: #ee4d2d; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: bold;">
+                        Gửi đánh giá
+                    </button>
                 </form>
         <?php break;
             }
