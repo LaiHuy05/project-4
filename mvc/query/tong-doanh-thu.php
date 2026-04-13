@@ -6,7 +6,7 @@ function thang_1()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 1
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 1
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";
@@ -22,7 +22,7 @@ function thang_2()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 2
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 2
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";
@@ -38,7 +38,7 @@ function thang_3()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 3
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 3
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";
@@ -54,7 +54,7 @@ function thang_4()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 4
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 4
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";
@@ -70,7 +70,7 @@ function thang_5()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 5
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 5
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";
@@ -86,7 +86,7 @@ function thang_6()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 6
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 6
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";
@@ -102,7 +102,7 @@ function thang_7()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 7
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 7
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";
@@ -118,7 +118,7 @@ function thang_8()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 8
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 8
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";
@@ -134,7 +134,7 @@ function thang_9()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 9
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 9
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";
@@ -150,7 +150,7 @@ function thang_10()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 10
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 10
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";
@@ -166,7 +166,7 @@ function thang_11()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 11
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 11
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";
@@ -182,7 +182,7 @@ function thang_12()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024 AND MONTH(dh_orderdate) = 12
+    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 12
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate);
 ";

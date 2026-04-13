@@ -466,7 +466,7 @@ switch ($admin) {
                 $thongBaoBN = "Thêm thành công";
             }
         }
-        include "product/update.php";
+        include "view/admin/product/update.php";
         break;
     case 'productDelete':
         delete_product($id);
@@ -500,7 +500,7 @@ switch ($admin) {
         $sp_pricedel = $product['sp_pricedel'];
 
 
-        include "product/detail.php";
+        include "view/admin/product/detail.php";
         break;
     case 'productColor-List':
         $list_product = load_all_product();
@@ -508,7 +508,7 @@ switch ($admin) {
         $list_category = load_all_category();
         include 'product/product-color/list.php';
         break;
-    case 'productColor-Add':
+    case 'view/admin/productColor-Add':
         $thongBao = "";
         $thongBaoLoiTen = '';
         $thongBaoLoiSP = '';
@@ -539,7 +539,7 @@ switch ($admin) {
                 $thongBao = "Thêm thành công";
             }
         }
-        include 'product/product-color/add.php';
+        include 'view/admin/product/product-color/add.php';
         break;
 
     case 'productColor-Update':
@@ -573,7 +573,7 @@ switch ($admin) {
                 $thongBao = "Sửa thành công";
             }
         }
-        include 'product/product-color/update.php';
+        include 'view/admin/product/product-color/update.php';
         break;
     case 'productColor-Delete':
 
@@ -590,7 +590,7 @@ switch ($admin) {
         $list_product = load_all_product();
         $list_product_memory = load_all_product_memory();
         $list_category = load_all_category();
-        include 'product/product-memory/list.php';
+        include 'view/admin/product/product-memory/list.php';
         break;
     case 'productMemory-Add':
         $thongBao = "";
@@ -624,7 +624,7 @@ switch ($admin) {
             }
         }
 
-        include 'product/product-memory/add.php';
+        include 'view/admin/product/product-memory/add.php';
         break;
     case 'productMemory-Update':
         $thongBao = "";
@@ -651,7 +651,7 @@ switch ($admin) {
                 $thongBao = "Sửa thành công";
             }
         }
-        include 'product/product-memory/update.php';
+        include 'view/admin/product/product-memory/update.php';
         break;
 
 
@@ -770,7 +770,7 @@ switch ($admin) {
                 header("Refresh: 1.5; url='?act=admin&admin=accountList'");
             }
         }
-        include 'account/update.php';
+        include 'view/admin/account/update.php';
         // header("location: ?act=admin&admin=categoryList");
         break;
     case 'accountDelete':
@@ -813,13 +813,13 @@ switch ($admin) {
         $list_order = load_all_order();
         $resultOrder = [];
 
-        include 'order/oderdetail.php';
+        include 'view/admin/order/oderdetail.php';
         break;
     case 'orderDelete':
         $dh_id = isset($_GET['dhid']) ? intval($_GET['dhid']) : 0;
         delete_order($dh_id);
         header("Location: ?act=admin&admin=orderList");
-        include 'order/list.php';
+        include 'view/admin/order/list.php';
         break;
     case 'orderUpdate':
     case 'orderUpdate':
@@ -842,7 +842,7 @@ switch ($admin) {
             }
         }
 
-        include 'order/update.php';
+        include 'view/admin/order/update.php';
         break;
     default:
         echo "Trang không tồn tại!";
