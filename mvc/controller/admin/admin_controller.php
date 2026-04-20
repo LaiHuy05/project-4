@@ -359,7 +359,7 @@ switch ($admin) {
                 $thongBaoBN = "Thêm thành công";
             }
         }
-        include "product/update.php";
+        include "view/admin/product/update.php";
         break;
         $thongBao = "";
         $thongBaoLoi = "";
