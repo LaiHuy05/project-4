@@ -104,7 +104,7 @@ switch ($admin) {
         $resultProduct = [];
 
         if (isset($_POST['btnSearch'], $_POST['inputSearch'])) {
-            $inputSearch = trim(strtolower($_POST['inputSearch']));
+            $inputSearch = trim(strtolower($_POST['inputSearch'])); 
 
             foreach ($list_product as $value) {
                 $nameProduct = strtolower($value['sp_name']);
