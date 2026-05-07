@@ -8,7 +8,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 if (isset($data['content']) && isset($data['id_tk']) && isset($data['id_sp'])) {
     try {
-        insert_comment($data['content'], $data['id_tk'], $data['id_sp']); // Gọi hàm insert của mày
+        insert_comment($data['content'], $data['id_tk'], $data['id_sp']); 
         echo json_encode([
             "status" => "success",
             "message" => "Đã đăng bình luận thành công!"
