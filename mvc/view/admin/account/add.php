@@ -32,7 +32,7 @@ include 'view/admin/nav.php';
             <label for="id_role">Role:</label>
             <select id="id_role" name="id_role">
                 <option value="">Chọn role</option>
-                <?php foreach ($list_role as $role): extract($role) ?>
+                <?php foreach ($list_role as $role): ?>
                     <option value="<?= $role['role_id'] ?>"
                         <?= isset($id_role) && $role['role_id'] == $id_role ? 'selected' : '' ?>>
                         <?= $role['role_name'] ?>
