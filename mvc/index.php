@@ -1,16 +1,15 @@
 <?php
-// mvc/index.php
-session_start(); 
-include_once './query/pdo.php';
+// Front controller: keep the existing ?act=admin / ?client=... URL scheme.
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/query/pdo.php';
 
 $act = $_GET['act'] ?? 'client';
-
 if ($act === 'logout') {
-    // Xử lý logout thẳng ở đây hoặc gọi file logout
-    include_once 'view/client/login/logout.php';
+    require __DIR__ . '/view/client/login/logout.php';
 } elseif ($act === 'admin' || isset($_GET['admin'])) {
-    include_once 'controller/admin/admin_controller.php';
+    require __DIR__ . '/controller/admin/admin_controller.php';
 } else {
-    // Luồng client
-    include_once 'controller/client/client_controller.php';
+    require __DIR__ . '/controller/client/client_controller.php';
 }
