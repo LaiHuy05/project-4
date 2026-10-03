@@ -16,9 +16,7 @@ include 'view/client/profile/profile.php';
                 if ($dh_status !== 'Đã nhận hàng') { ?>
                     <div class="order-item">
                         <p style="border: 1px solid gray; text-align: center; border-radius: 5px; margin-bottom: 5px;">Mã Đơn Hàng:
-                            <?php $code_dh = load_one_order_totalamount($dh_totalamount);
-                            extract($code_dh);
-                            echo $dh_ma; ?>
+                            <?= htmlspecialchars($dh_ma, ENT_QUOTES, 'UTF-8') ?>
                         </p>
                         <?php foreach ($list_orderdetail as $orderdetail) : extract($orderdetail);
                             if ($id_dh == $dh_id) {
@@ -30,7 +28,7 @@ include 'view/client/profile/profile.php';
                                                 <img src="<?= $sp_image ?>" alt="Ảnh sản phẩm" class="product-image">
                                                 <div class="product-details">
                                                     <h3 class="product-name"><?= $sp_name ?></h3>
-                                                    <p class="product-category">Phân loại:<?= $od_option ?> + <?= $od_optionColor ?></p>
+                                                    <p class="product-category">Phân loại:<?= htmlspecialchars($od_option, ENT_QUOTES, 'UTF-8') ?> + <?= htmlspecialchars($od_optionColor, ENT_QUOTES, 'UTF-8') ?></p>
                                                     <p class="product-quantity">Số lượng: <?= $orderdetail['ct_quantity'] ?></p>
                                                 </div>
                                             </div>
@@ -46,7 +44,11 @@ include 'view/client/profile/profile.php';
                             <?php if ($dh_status == 'Giao Hàng Thành Công') { ?>
                                 <div class="final">
                                     <a href=""><button class="review-btn">Liên hệ</button></a>
-                                    <a href="?client=finaldh&id=<?= $dh_id ?>&value=Đã nhận hàng&idtk=<?= $id_tk ?>"><button class="review-btn">Xác Nhận</button></a>
+                                    <form action="?client=finaldh" method="POST" style="display:inline">
+                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token()) ?>">
+                                        <input type="hidden" name="id" value="<?= (int)$dh_id ?>">
+                                        <button type="submit" class="review-btn">Xác Nhận</button>
+                                    </form>
                                 </div>
                             <?php } ?>
                         </div>

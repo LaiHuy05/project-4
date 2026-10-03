@@ -1,190 +1,40 @@
 <?php
-function thang_1()
+/**
+ * One grouped, index-friendly query per PHP request instead of 12 queries.
+ * The thang_1() ... thang_12() return values keep the legacy controller shape.
+ */
+function current_year_monthly_revenue()
 {
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 1
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
+    static $months = null;
+    if ($months !== null) return $months;
+    $rows = pdo_query("SELECT MONTH(dh_orderdate) AS month_no,
+            SUM(dh_totalamount) AS tong_doanh_thu
+        FROM `order`
+        WHERE dh_orderdate >= MAKEDATE(YEAR(CURDATE()), 1)
+          AND dh_orderdate < MAKEDATE(YEAR(CURDATE())+1, 1)
+        GROUP BY MONTH(dh_orderdate)");
+    $months = [];
+    foreach ($rows as $row) {
+        $months[(int)$row['month_no']] = (float)$row['tong_doanh_thu'];
+    }
+    return $months;
 }
 
-// --------------------------------------------------------
-
-function thang_2()
+function revenue_for_month($month)
 {
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 2
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
+    $months = current_year_monthly_revenue();
+    return array_key_exists($month,$months) ? [['tong_doanh_thu' => $months[$month]]] : [];
 }
 
-// --------------------------------------------------------
-
-function thang_3()
-{
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 3
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
-}
-
-// --------------------------------------------------------
-
-function thang_4()
-{
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 4
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
-}
-
-// --------------------------------------------------------
-
-function thang_5()
-{
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 5
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
-}
-
-// --------------------------------------------------------
-
-function thang_6()
-{
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 6
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
-}
-
-// --------------------------------------------------------
-
-function thang_7()
-{
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 7
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
-}
-
-// --------------------------------------------------------
-
-function thang_8()
-{
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 8
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
-}
-
-// --------------------------------------------------------
-
-function thang_9()
-{
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 9
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
-}
-
-// --------------------------------------------------------
-
-function thang_10()
-{
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 10
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
-}
-
-// --------------------------------------------------------
-
-function thang_11()
-{
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 11
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
-}
-
-// --------------------------------------------------------
-
-function thang_12()
-{
-    $sql = "SELECT 
-    SUM(dh_totalamount) AS tong_doanh_thu
-FROM 
-    `order`
-WHERE 
-    YEAR(dh_orderdate) =YEAR(CURDATE()) AND MONTH(dh_orderdate) = 12
-GROUP BY 
-    YEAR(dh_orderdate), MONTH(dh_orderdate);
-";
-    return pdo_query($sql);
-}
+function thang_1() { return revenue_for_month(1); }
+function thang_2() { return revenue_for_month(2); }
+function thang_3() { return revenue_for_month(3); }
+function thang_4() { return revenue_for_month(4); }
+function thang_5() { return revenue_for_month(5); }
+function thang_6() { return revenue_for_month(6); }
+function thang_7() { return revenue_for_month(7); }
+function thang_8() { return revenue_for_month(8); }
+function thang_9() { return revenue_for_month(9); }
+function thang_10() { return revenue_for_month(10); }
+function thang_11() { return revenue_for_month(11); }
+function thang_12() { return revenue_for_month(12); }

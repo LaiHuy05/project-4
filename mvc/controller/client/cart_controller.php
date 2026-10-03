@@ -1,89 +1,70 @@
 <?php
-/**
- * Client cart actions.
- * Database functions remain in mvc/query during this behavior-preserving refactor.
- */
+/** Cart reads and mutations are always scoped to the authenticated user. */
 final class ClientCartController
 {
     public static function handle(string $client, $iduser = null): void
     {
-        switch ($client) {
-          case 'cart':
-              $listAll_product = load_all_product();
-              $list_account = load_all_account(); // Lấy dữ liệu từ CSDL
-              $list_cart = load_all_cart();
-              $list_cartDetail = load_all_cartDetail();
-              $list_category = load_all_category();
-        
-              include 'view/client/cart.php';
-              break;
-          case 'cartdetail':
-              $list_cart = load_all_cart();
-              $idsp = $_GET['id'];
-              $idgh = $_GET['idgh'];
-              $option = $_GET['option'];
-              $colorOption  = $_GET['colorOption'];
-              // echo $option;
-              insert_cartDetail($idgh, $idsp, $option, $colorOption);
-              // addOneCart($idgh);
-              $idtk = 0;
-              foreach ($list_cart as $cart) {
-                  extract($cart);
-                  if ($idgh == $gh_id) {
-                      $idtk = $id_tk;
-                      break;
-                  }
-              }
-              header("Location: ?client=cart&iduser=$idtk");
-              break;
-          case 'Cartdetailadd':
-              $idcd = $_GET['idcd'];
-              $idgh = $_GET['idgh'];
-              addOneCartdetail($idcd);
-              $list_cart = load_all_cart();
-              // addOneCart($idgh);
-              $idtk = 0;
-              foreach ($list_cart as $cart) {
-                  extract($cart);
-                  if ($idgh == $gh_id) {
-                      $idtk = $id_tk;
-                      break;
-                  }
-              }
-              header("Location: ?client=cart&iduser=$idtk");
-              break;
-          case 'Cartdetailoss':
-              $idcd = $_GET['idcd'];
-              $idgh = $_GET['idgh'];
-              lossOneCartdetail($idcd);
-              $list_cart = load_all_cart();
-              // addOneCart($idgh);
-              $idtk = 0;
-              foreach ($list_cart as $cart) {
-                  extract($cart);
-                  if ($idgh == $gh_id) {
-                      $idtk = $id_tk;
-                      break;
-                  }
-              }
-              header("Location: ?client=cart&iduser=$idtk");
-              break;
-          case 'cartdelete':
-              $list_cart = load_all_cart();
-              $id = $_GET['id'];
-              // $idsp = $_GET['id'];
-              $idgh = $_GET['idgh'];
-              delete_cartdetail($id);
-              $idtk = 0;
-              foreach ($list_cart as $cart) {
-                  extract($cart);
-                  if ($idgh == $gh_id) {
-                      $idtk = $id_tk;
-                      break;
-                  }
-              }
-              header("Location: ?client=cart&iduser=$idtk");
-              break;
+        $userId = $_SESSION['user_id'] ?? null;
+        if ($client === 'cart') {
+            if ($userId !== null && (!isset($_GET['iduser']) || (string)$_GET['iduser'] !== (string)$userId)) {
+                header('Location: ?client=cart&iduser='.(int)$userId); exit;
+            }
+            $list_category = load_all_category();
+            $listAll_product = load_all_product();
+            $list_account = $userId !== null ? array_filter([load_one_account((int)$userId)]) : [];
+            $list_cart = $userId !== null ? load_all_cart() : [];
+            $list_cartDetail = $userId !== null ? load_all_cartDetail() : [];
+            include 'view/client/cart.php';
+            return;
         }
+
+        if (!isset($userId) || !is_numeric($userId)) {
+            http_response_code(401); exit('Vui lòng đăng nhập.');
+        }
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+            http_response_code(405); header('Allow: POST'); exit('Thao tác giỏ hàng phải dùng POST.');
+        }
+        if (!Csrf::verify($_POST['csrf_token'] ?? null)) {
+            http_response_code(403); exit('Phiên biểu mẫu không hợp lệ.');
+        }
+        $userId = (int)$userId;
+        $cartId = filter_var($_POST['idgh'] ?? null, FILTER_VALIDATE_INT);
+        if ($client === 'cartdetail' && (!$cartId || $cartId < 1)) {
+            $cartId = find_cart_id_for_user($userId);
+            if ($cartId === null) {
+                insert_cart($userId);
+                $cartId = find_cart_id_for_user($userId);
+            }
+        }
+        if (!$cartId || !cart_belongs_to_user($cartId, $userId)) {
+            http_response_code(403); exit('Giỏ hàng không thuộc tài khoản.');
+        }
+        switch ($client) {
+            case 'cartdetail':
+                $productId = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+                $memory = trim((string)($_POST['option'] ?? ''));
+                $color = trim((string)($_POST['colorOption'] ?? ''));
+                if (!$productId || $productId < 1 || !load_one_product($productId)
+                    || strlen($memory) > 100 || strlen($color) > 100
+                    || $memory !== strip_tags($memory) || $color !== strip_tags($color)) {
+                    http_response_code(400); exit('Sản phẩm hoặc tùy chọn không hợp lệ.');
+                }
+                insert_cartDetail($cartId, $productId, $memory, $color);
+                break;
+            case 'Cartdetailadd':
+            case 'Cartdetailoss':
+            case 'cartdelete':
+                $detailId = filter_var($_POST['idcd'] ?? null, FILTER_VALIDATE_INT);
+                if (!$detailId || !cartdetail_belongs_to_user($detailId, $userId)) {
+                    http_response_code(403); exit('Sản phẩm không thuộc giỏ hàng.');
+                }
+                if ($client === 'Cartdetailadd') addOneCartdetail($detailId);
+                elseif ($client === 'Cartdetailoss') lossOneCartdetail($detailId);
+                else delete_cartdetail($detailId);
+                break;
+            default:
+                http_response_code(404); exit('Thao tác không tồn tại.');
+        }
+        header('Location: ?client=cart&iduser='.$userId); exit;
     }
 }

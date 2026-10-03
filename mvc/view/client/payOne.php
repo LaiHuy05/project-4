@@ -13,6 +13,7 @@ if (!isset($_SESSION['quantity'])) {
         <h4>Địa chỉ nhận hàng</h4>
         <div class="addres-input">
             <form action="" method="POST">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
                 <div class="input-name">
                     <input
                         type="text"
@@ -147,18 +148,7 @@ if (!isset($_SESSION['quantity'])) {
 
                 <div style="margin-top: 20px;" class="pay-confirm">
                     <a href="#">Giỏ hàng</a>
-                    <input type="hidden" name="sumSP" value="<?php
-                                                                $sum = 0;
-                                                                foreach ($listAll_product as $product) {
-                                                                    extract($product);
-                                                                    if ($sp_id == $_GET['idsp']) {
-                                                                        $sum = $sp_price * $_GET['quantity'];
-                                                                        break;
-                                                                    }
-                                                                }
-                                                                echo $sum;
-
-                                                                ?>" id="">
+                    <!-- Total is now calculated from database values by CheckoutService. -->
                     <button type="submit" name="btnPay" class="button-confirm">
                         Xác nhận thanh toán
                     </button>
@@ -179,8 +169,8 @@ if (!isset($_SESSION['quantity'])) {
                         <img src="<?= $sp_image ?>" alt="<?= $sp_name ?>" />
                         <div class="productPay-img-col-title">
                             <h5><?= $sp_name ?></h5>
-                            <h6>Dung lượng: <?= $_GET['optionb'] ?></h6>
-                            <h6>Màu: <?= $_GET['optioncolorb'] ?></h6>
+                            <h6>Dung lượng: <?= htmlspecialchars($cd_option, ENT_QUOTES, 'UTF-8') ?></h6>
+                            <h6>Màu: <?= htmlspecialchars($cd_optionColor, ENT_QUOTES, 'UTF-8') ?></h6>
                             <p style="color: red;"><?= number_format($sp_price, 0, ',', '.') ?><span>đ</span></p>
                             <p><span>x <?= $_GET['quantity'] ?></span></p> <!-- Hiển thị số lượng sản phẩm -->
                         </div>
@@ -200,18 +190,7 @@ if (!isset($_SESSION['quantity'])) {
         <hr><br>
         <div class="productPay-summary">
             <h3>Thành Tiền:</h3>
-            <p style="color: red; font-size: 20px; margin-top: 10px;"><?php
-                                                                        $sum = 0;
-                                                                        foreach ($listAll_product as $product) {
-                                                                            extract($product);
-                                                                            if ($sp_id == $_GET['idsp']) {
-                                                                                $sum = $sp_price * $_GET['quantity'];
-                                                                                break;
-                                                                            }
-                                                                        }
-                                                                        echo printPrice($sum);
-
-                                                                        ?> <span>đ</span></p>
+            <p style="color: red; font-size: 20px; margin-top: 10px;"><?= number_format($singleTotal, 0, ',', '.') ?> <span>đ</span></p>
         </div>
     </div>
 </div>,

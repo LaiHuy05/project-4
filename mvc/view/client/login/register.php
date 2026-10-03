@@ -8,6 +8,7 @@ include "view/client/nav.php";
 </head>
 <div class="container1">
     <form class="form-login" action="" method="POST">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
         <div class="register-title">
             <h1>Đăng ký với</h1>
         </div>
@@ -41,7 +42,7 @@ include "view/client/nav.php";
                     id="name"
                     name="name"
                     placeholder="Nhập Tên Đăng Nhập"
-                    value="<?php if (isset($name) && !empty($name)) echo $name; ?>" />
+                    value="<?= htmlspecialchars($name ?? '', ENT_QUOTES, 'UTF-8') ?>" />
                 <?php if (!empty($messName)): ?>
                     <i style="color: red;"><?php echo $messName; ?></i>
                 <?php endif; ?>
@@ -54,7 +55,7 @@ include "view/client/nav.php";
                     id="phone"
                     name="address"
                     placeholder="Nhập Địa Chỉ"
-                    value="<?php if (isset($address) && !empty($address)) echo $address; ?>" />
+                    value="<?= htmlspecialchars($address ?? '', ENT_QUOTES, 'UTF-8') ?>" />
                 <?php if (!empty($messAddress)): ?>
                     <i style="color: red;"><?php echo $messAddress; ?></i>
                 <?php endif; ?>
@@ -68,7 +69,7 @@ include "view/client/nav.php";
                     id="email"
                     name="emailRegister"
                     placeholder="Nhập email"
-                    value="<?php if (isset($emailRegister) && !empty($emailRegister)) echo $emailRegister; ?>" />
+                    value="<?= htmlspecialchars($emailRegister ?? '', ENT_QUOTES, 'UTF-8') ?>" />
                 <p>Hóa đơn VAT khi mua hàng sẽ được gửi qua email này</p>
                 <?php if (!empty($messEmailRegister)): ?>
                     <i style="color: red;"><?php echo $messEmailRegister; ?></i>
@@ -83,7 +84,7 @@ include "view/client/nav.php";
                     id="password"
                     name="password"
                     placeholder="Nhập mật khẩu"
-                    value="<?php if (isset($password) && !empty($password)) echo $password; ?>" />
+                    autocomplete="new-password" />
                 <p>
                     (*) Mật khẩu tối thiểu 6 ký tự
                 </p>
@@ -100,7 +101,7 @@ include "view/client/nav.php";
                     id="confirm-password"
                     name="confirmPassword"
                     placeholder="Nhập lại mật khẩu"
-                    value="<?php if (isset($confirmPassword) && !empty($confirmPassword)) echo $confirmPassword; ?>" />
+                    autocomplete="new-password" />
                 <?php if (!empty($messConfirmPassword)): ?>
                     <i style="color: red;"><?php echo $messConfirmPassword; ?></i>
                 <?php endif; ?>

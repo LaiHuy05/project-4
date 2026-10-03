@@ -13,7 +13,7 @@ include 'view/admin/nav.php';
             <?php endif; ?>
 
             <label for="">Mật khẩu:</label>
-            <input type="password" name="pass" value="<?= $_POST['pass'] ?? $account['tk_password'] ?>">
+            <input type="password" name="pass" value="" autocomplete="new-password" placeholder="Để trống nếu không đổi mật khẩu">
             <?php if (!empty($errors['pass'])): ?>
                 <div class="error-message"><?= $errors['pass'] ?></div>
             <?php endif; ?>

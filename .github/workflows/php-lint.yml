@@ -1,4 +1,4 @@
-name: PHP syntax
+name: PHP syntax and security smoke
 on:
   push:
     paths:
@@ -13,5 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check PHP syntax across MVC application
+      - name: PHP lint
         run: find mvc -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Security smoke test
+        run: php mvc/tests/security_smoke.php && php mvc/tests/checkout_smoke.php && php mvc/tests/revenue_smoke.php

@@ -21,12 +21,13 @@ include 'view/client/profile/profile.php';
                                                 <img src="<?= $sp_image ?>" alt="Ảnh sản phẩm" class="product-image">
                                                 <div class="product-details">
                                                     <h3 class="product-name"><?= $sp_name ?></h3>
-                                                    <p class="product-category">Phân loại:<?= $od_option ?> + <?= $od_optionColor ?></p>
+                                                    <p class="product-category">Phân loại:<?= htmlspecialchars($od_option, ENT_QUOTES, 'UTF-8') ?> + <?= htmlspecialchars($od_optionColor, ENT_QUOTES, 'UTF-8') ?></p>
                                                     <p class="product-quantity">Số lượng: <?= $orderdetail['ct_quantity'] ?></p>
                                                 </div>
                                             </div>
                                             <div class="danhgia">
-                                                <form method="GET" action="">
+                                                <form method="POST" action="?client=addComment">
+                                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token()) ?>">
                                                     <input type="hidden" name="client" value="addComment">
                                                     <input type="hidden" name="iduser" value="<?= $_GET['iduser'] ?>">
                                                     <input type="hidden" name="idsp" value="<?= $sp_id ?>">
