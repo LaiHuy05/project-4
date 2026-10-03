@@ -87,3 +87,12 @@ ORDER BY
 ";
     return pdo_query($sql);
 }
+
+function load_orders_for_user($userId)
+{
+    return pdo_query("SELECT * FROM `order` WHERE id_tk=? ORDER BY dh_orderdate DESC",$userId);
+}
+function load_order_details_for_user($userId)
+{
+    return pdo_query("SELECT d.* FROM orderdetail d JOIN `order` o ON o.dh_id=d.id_dh WHERE o.id_tk=?",$userId);
+}

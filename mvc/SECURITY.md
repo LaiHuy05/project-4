@@ -19,3 +19,7 @@ based on syntax and smoke tests alone.
 Cart add/update/delete routes now require POST+CSRF and check the session owns
 both the cart and selected cart-detail IDs. The product and cart templates
 submit protected forms instead of GET mutation links.
+
+Profile routes require login and cannot select another account from iduser;
+order confirmations check ownership and required status before applying a
+fixed transition via POST+CSRF. Comment forms are POST+CSRF as well.

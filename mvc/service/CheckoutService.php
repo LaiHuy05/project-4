@@ -28,10 +28,10 @@ final class CheckoutService
         return $ids;
     }
 
-    public static function positiveInt($value, string $label): int
+    public static function positiveInt($value, string $label, int $max = PHP_INT_MAX): int
     {
         if (!is_scalar($value) || filter_var($value, FILTER_VALIDATE_INT) === false
-            || (int) $value < 1 || (int) $value > 100) {
+            || (int) $value < 1 || (int) $value > $max) {
             throw new InvalidArgumentException($label . ' không hợp lệ.');
         }
         return (int) $value;
@@ -42,7 +42,7 @@ final class CheckoutService
         $amount = 0;
         $quantity = 0;
         foreach ($rows as $row) {
-            $q = self::positiveInt($row['cd_quantity'] ?? null, 'Số lượng');
+            $q = self::positiveInt($row['cd_quantity'] ?? null, 'Số lượng', 100);
             if (!isset($row['sp_price']) || !is_numeric($row['sp_price'])
                 || (float) $row['sp_price'] < 0) {
                 throw new InvalidArgumentException('Giá sản phẩm không hợp lệ.');

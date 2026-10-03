@@ -118,8 +118,7 @@ include "nav.php";
                         </div>
 
                         <div class="content-two">
-                            <form action="?client=cartdetail" method="POST">
-                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token()) ?>">
+                            <form action="" method="get">
                                 <div style="margin-bottom: 10px;"><span class="price-sale"
                                         style="color: #D70018; padding-right: 10px;"><?= printPrice($sp_price)  ?></span><span><del
                                             style="color: gray;">36.990.00đ</del></span></div>
@@ -319,7 +318,7 @@ include "nav.php";
                                                     <?= $bl_cmtdate ?>
                                                 </div>
                                             </div>
-                                            <div class="comment-content"><?= $bl_content ?></div>
+                                            <div class="comment-content"><?= htmlspecialchars($bl_content, ENT_QUOTES, 'UTF-8') ?></div>
                                         </div>
                                 <?php }
                                 endforeach; ?>
@@ -396,7 +395,8 @@ include "nav.php";
                         <button>GỬI ĐÁNH GIÁ NGAY</button>
                     </div>
                 </form> -->
-                <form action="index.php" method="GET" style="margin-top: 15px;">
+                <form action="?client=addComment" method="POST" style="margin-top: 15px;">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token()) ?>">
                     <input type="hidden" name="client" value="addComment">
                     <input type="hidden" name="iduser" value="<?= $iduser ?? '' ?>">
                     <input type="hidden" name="idsp" value="<?= $id_sp ?? '' ?>">
