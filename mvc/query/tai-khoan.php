@@ -1,47 +1,52 @@
 <?php
-
 function load_all_account()
 {
-    // Sửa lại truy vấn để JOIN bảng account với bảng role
-    $sql = "SELECT a.*, r.role_name FROM account a
-            JOIN role r ON a.id_role = r.role_id";
-    $list_account = pdo_query($sql);
-    return $list_account;
+    return pdo_query("SELECT a.*, r.role_name FROM account a JOIN role r ON a.id_role = r.role_id");
 }
-function load_all_role()
+function load_all_role() { return pdo_query("SELECT * FROM role"); }
+function load_one_account($id) { return pdo_query_one("SELECT * FROM account WHERE tk_id = ?", $id); }
+function find_account_by_username($username) { return pdo_query_one("SELECT * FROM account WHERE tk_user = ? LIMIT 1", $username); }
+function check_duplicate_account($username, $excludeId = null)
 {
-    $sql = "select * from role";
-    $list_role = pdo_query($sql);
-    return $list_role;
-} //trả về danh sách role
-function load_one_account($tk_id)
+    if ($excludeId !== null) return (int) pdo_query_value("SELECT COUNT(*) FROM account WHERE tk_user = ? AND tk_id <> ?", $username, $excludeId) > 0;
+    return (int) pdo_query_value("SELECT COUNT(*) FROM account WHERE tk_user = ?", $username) > 0;
+}
+function check_duplicate_email($email, $excludeId = null)
 {
-    $sql = "select * from account where tk_id ='" . $tk_id . "';";
-    $one_account = pdo_query_one($sql);
-    return $one_account;
-} //trả về 1 trường tài khoản khi tìm kiếm
-
-function insert_account($tk_user, $tk_password, $tk_email, $tk_address, $id_role)
+    if ($excludeId !== null) return (int) pdo_query_value("SELECT COUNT(*) FROM account WHERE tk_email = ? AND tk_id <> ?", $email, $excludeId) > 0;
+    return (int) pdo_query_value("SELECT COUNT(*) FROM account WHERE tk_email = ?", $email) > 0;
+}
+function insert_account($user, $pass, $email, $address, $role)
 {
-    $sql = "INSERT INTO `account`(`tk_id`, `tk_user`, `tk_password`, `tk_email`, `tk_address`, `id_role`) VALUES (null, '$tk_user', '$tk_password', '$tk_email', '$tk_address', '$id_role');";
-    pdo_execute($sql);
-} //thêm mới tài khoản
-
-function update_account($tk_id, $tk_user, $tk_password, $tk_email, $tk_address, $id_role)
+    pdo_execute("INSERT INTO account(tk_user,tk_password,tk_email,tk_address,id_role) VALUES (?,?,?,?,?)",
+        $user, password_hash($pass, PASSWORD_BCRYPT), $email, $address, $role);
+}
+function update_account($id, $user, $pass, $email, $address, $role)
 {
-    $sql = "UPDATE `account` SET  `tk_user` = '" . $tk_user . "', `tk_password` = '" . $tk_password
-        . "', `tk_email` = '" . $tk_email . "', `tk_address` = '" . $tk_address . "', `id_role` = '" . $id_role . "'WHERE `tk_id` = '" . $tk_id . "'";
-    pdo_execute($sql);
-} //cập nhật tài khoản
-
-function delete_account($tk_id)
+    if ($pass === '') {
+        pdo_execute("UPDATE account SET tk_user=?,tk_email=?,tk_address=?,id_role=? WHERE tk_id=?",
+            $user,$email,$address,$role,$id);
+    } else {
+        pdo_execute("UPDATE account SET tk_user=?,tk_password=?,tk_email=?,tk_address=?,id_role=? WHERE tk_id=?",
+            $user,password_hash($pass,PASSWORD_BCRYPT),$email,$address,$role,$id);
+    }
+}
+function delete_account($id) { pdo_execute("DELETE FROM account WHERE tk_id=?", $id); }
+/** Temporary legacy plaintext migration. Remove after all accounts are migrated. */
+function verify_account_password(array $account, $password)
 {
-    $sql = "delete from account where tk_id ='" . $tk_id . "';";
-    pdo_execute($sql);
-} //xóa tài khoản
-function check_duplicate_account($tk_user)
-{
-    $sql = "SELECT COUNT(*) AS count FROM account WHERE tk_user = ?";
-    $result = pdo_query_one($sql, $tk_user); // Truyền tham số trực tiếp, không phải là một mảng
-    return $result['count'] > 0;
+    $stored = (string) ($account['tk_password'] ?? '');
+    if ($stored === '') return false;
+    if ((password_get_info($stored)['algoName'] ?? 'unknown') !== 'unknown') {
+        $valid = password_verify($password, $stored);
+        if ($valid && password_needs_rehash($stored, PASSWORD_BCRYPT)) {
+            pdo_execute("UPDATE account SET tk_password=? WHERE tk_id=? AND tk_password=?",
+                password_hash($password,PASSWORD_BCRYPT),$account['tk_id'],$stored);
+        }
+        return $valid;
+    }
+    if (!hash_equals($stored, $password)) return false;
+    pdo_execute("UPDATE account SET tk_password=? WHERE tk_id=? AND tk_password=?",
+        password_hash($password,PASSWORD_BCRYPT),$account['tk_id'],$stored);
+    return true;
 }

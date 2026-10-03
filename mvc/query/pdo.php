@@ -1,107 +1,53 @@
 <?php
 function pdo_get_connection()
 {
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-
-    try {
-        $conn = new PDO("mysql:host=$servername;dbname=duan1", $username, $password);
-        // set the PDO error mode to exception
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $conn;
-    } catch (PDOException $e) {
-        echo "Lỗi kết nối: " . $e->getMessage();
-    }
+    static $connection = null;
+    if ($connection instanceof PDO) return $connection;
+    $host = getenv('DB_HOST') ?: 'localhost';
+    $name = getenv('DB_NAME') ?: 'duan1';
+    $user = getenv('DB_USER') !== false ? getenv('DB_USER') : 'root';
+    $password = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : '';
+    $connection = new PDO("mysql:host={$host};dbname={$name};charset=utf8mb4", $user, $password, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_BOTH,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ]);
+    return $connection;
 }
-
-// Thực thi câu lệnh sql thao tác dữ liệu (INSERT, UPDATE, DELETE)
-//sql
-//sql,...,id
-//"insert into loai(ten_loai) values(?)"."laptop"
-//"update loai set ten_loai=? where ma_loai=?", "Laptop" , "1"
-//"delete from loai where ma_loai=?", "1"
-
-function pdo_execute($sql)
+function pdo_execute($sql, ...$args)
 {
-    $sql_args = array_slice(func_get_args(), 1);
-    try {
-        $conn = pdo_get_connection();
-        $stmt = $conn->prepare($sql);
-        $stmt->execute($sql_args);
-    } catch (PDOException $e) {
-        throw $e;
-    } finally {
-        unset($conn);
-    }
+    $stmt = pdo_get_connection()->prepare($sql);
+    $stmt->execute($args);
 }
-
-/**
- * Thực thi câu lệnh sql truy vấn dữ liệu (SELECT)
- * @param string $sql câu lệnh sql
- * @param array $args mảng giá trị cung cấp cho các tham số của $sql
- * @return array mảng các bản ghi
- * @throws PDOException lỗi thực thi câu lệnh
- */
-function pdo_query($sql)
+function pdo_query($sql, ...$args)
 {
-    $sql_args = array_slice(func_get_args(), 1);
-    try {
-        $conn = pdo_get_connection();
-        $stmt = $conn->prepare($sql);
-        $stmt->execute($sql_args);
-        $rows = $stmt->fetchAll();
-        return $rows;
-    } catch (PDOException $e) {
-        throw $e;
-    } finally {
-        unset($conn);
-    }
+    $stmt = pdo_get_connection()->prepare($sql);
+    $stmt->execute($args);
+    return $stmt->fetchAll();
 }
-
-/**
- * Thực thi câu lệnh sql truy vấn dữ liệu (SELECT)
- * @param string $sql câu lệnh sql
- * @param array $args mảng giá trị cung cấp cho các tham số của $sql
- * @return array mảng các bản ghi
- * @throws PDOException lỗi thực thi câu lệnh
- */
-function pdo_query_one($sql)
+function pdo_query_one($sql, ...$args)
 {
-    $sql_args = array_slice(func_get_args(), 1);
-    try {
-        $conn = pdo_get_connection();
-        $stmt = $conn->prepare($sql);
-        $stmt->execute($sql_args);
-        $rows = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $rows;
-    } catch (PDOException $e) {
-        throw $e;
-    } finally {
-        unset($conn);
-    }
+    $stmt = pdo_get_connection()->prepare($sql);
+    $stmt->execute($args);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
-
-
-/**
- * Thực thi câu lệnh sql truy vấn 1 giá trị
- * @param string $sql câu lệnh sql
- * @param array $args mảng giá trị cung cấp cho các tham số của $sql 
- * @return giá trị 
- * @throws PDOException lỗi thực thi câu lệnh
- */
-function pdo_query_value($sql)
+function pdo_query_value($sql, ...$args)
 {
-    $sql_args = array_slice(func_get_args(), 1);
+    $stmt = pdo_get_connection()->prepare($sql);
+    $stmt->execute($args);
+    return $stmt->fetchColumn();
+}
+function pdo_transaction(callable $callback)
+{
+    $conn = pdo_get_connection();
+    if ($conn->inTransaction()) throw new LogicException('Nested transactions are not supported');
+    $conn->beginTransaction();
     try {
-        $conn = pdo_get_connection();
-        $stmt = $conn->prepare($sql);
-        $stmt->execute($sql_args);
-        $rows = $stmt->fetch(PDO::FETCH_ASSOC);
-        return array_values($rows)[0];
-    } catch (PDOException $e) {
-        throw $e;
-    } finally {
-        unset($conn);
+        $result = $callback($conn);
+        $conn->commit();
+        return $result;
+    } catch (Throwable $error) {
+        if ($conn->inTransaction()) $conn->rollBack();
+        throw $error;
     }
 }

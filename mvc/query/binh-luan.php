@@ -1,20 +1,11 @@
 <?php
 function load_all_comment()
 {
-    $sql = "SELECT a.*, b.tk_user, c.sp_name FROM comment a
-            JOIN account b ON a.id_tk = b.tk_id   
-            JOIN product c ON a.id_sp = c.sp_id
-            ORDER BY a.bl_id ASC";
-    $list_comment = pdo_query($sql);
-    return $list_comment;
+    return pdo_query("SELECT a.*,b.tk_user,c.sp_name FROM comment a
+        JOIN account b ON a.id_tk=b.tk_id JOIN product c ON a.id_sp=c.sp_id ORDER BY a.bl_id ASC");
 }
-function delete_comment($bl_id)
+function delete_comment($id) { pdo_execute("DELETE FROM comment WHERE bl_id=?", $id); }
+function insert_comment($content,$accountId,$productId)
 {
-    $sql = "DELETE FROM `comment` where bl_id = '$bl_id';";
-    pdo_execute($sql);
-} //xóa bình luận
-function insert_comment($bl_content, $id_tk, $id_sp)
-{
-    $sql = "INSERT INTO `comment` (`bl_content`, `id_tk`, `id_sp`) VALUES ('$bl_content', '$id_tk', '$id_sp');";
-    pdo_execute($sql);
+    pdo_execute("INSERT INTO comment(bl_content,id_tk,id_sp) VALUES(?,?,?)",$content,$accountId,$productId);
 }
