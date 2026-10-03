@@ -121,6 +121,7 @@ final class CheckoutService
         string $memory, string $color, array $form): string
     {
         if (self::validateForm($form)) throw new InvalidArgumentException('Biểu mẫu không hợp lệ.');
+        $quantity = self::positiveInt($quantity, 'Số lượng', 100);
         return pdo_transaction(function () use ($userId, $productId, $quantity, $memory, $color, $form) {
             $product = pdo_query_one('SELECT sp_id, sp_price FROM product WHERE sp_id = ? FOR UPDATE', $productId);
             if (!$product) throw new InvalidArgumentException('Sản phẩm không tồn tại.');

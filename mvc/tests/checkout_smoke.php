@@ -14,4 +14,6 @@ $s = CheckoutService::totals([
 ]);
 test_checkout($s === ['total' => 500000, 'quantity' => 3], 'server priced totals');
 test_checkout(CheckoutService::validateForm(['namePay' => 'A']) !== [], 'required fields');
+test_checkout(CheckoutService::positiveInt('250', 'Sản phẩm') === 250, 'allow IDs over 100');
+try { CheckoutService::positiveInt('101', 'Số lượng', 100); throw new RuntimeException('oversized quantity accepted'); } catch (InvalidArgumentException $expected) {}
 echo "Checkout smoke tests passed\n";

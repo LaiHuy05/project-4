@@ -26,7 +26,8 @@ include 'view/client/profile/profile.php';
                                                 </div>
                                             </div>
                                             <div class="danhgia">
-                                                <form method="POST" action="?client=addComment">\n                                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token()) ?>">
+                                                <form method="POST" action="?client=addComment">
+                                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token()) ?>">
                                                     <input type="hidden" name="client" value="addComment">
                                                     <input type="hidden" name="iduser" value="<?= $_GET['iduser'] ?>">
                                                     <input type="hidden" name="idsp" value="<?= $sp_id ?>">

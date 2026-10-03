@@ -169,8 +169,8 @@ if (!isset($_SESSION['quantity'])) {
                         <img src="<?= $sp_image ?>" alt="<?= $sp_name ?>" />
                         <div class="productPay-img-col-title">
                             <h5><?= $sp_name ?></h5>
-                            <h6>Dung lượng: <?= $_GET['optionb'] ?></h6>
-                            <h6>Màu: <?= $_GET['optioncolorb'] ?></h6>
+                            <h6>Dung lượng: <?= htmlspecialchars($cd_option, ENT_QUOTES, 'UTF-8') ?></h6>
+                            <h6>Màu: <?= htmlspecialchars($cd_optionColor, ENT_QUOTES, 'UTF-8') ?></h6>
                             <p style="color: red;"><?= number_format($sp_price, 0, ',', '.') ?><span>đ</span></p>
                             <p><span>x <?= $_GET['quantity'] ?></span></p> <!-- Hiển thị số lượng sản phẩm -->
                         </div>

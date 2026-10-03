@@ -1,25 +1,38 @@
-# Next security stage (on top of the controller-splitting PR)
+# Migration and security notes (PR #2, depends on PR #1)
 
-Back up MySQL and apply `migrations/2026-10-03_expand_password_column.sql`
-BEFORE deploying bcrypt passwords. Supply DB_HOST, DB_NAME, DB_USER and
-DB_PASSWORD as server environment variables. Ensure MySQL uses InnoDB.
+Before deployment, **back up your database** and apply
+`migrations/2026-10-03_expand_password_column.sql` to expand
+`account.tk_password` to VARCHAR(255). Deploying bcrypt writes before this
+migration may truncate hashes and lock users out. Configure DB_HOST, DB_NAME,
+DB_USER, and DB_PASSWORD through server environment settings.
 
-- SQL statements now use placeholders for dynamic CRUD arguments.
-- One request shares its PDO connection; `pdo_transaction()` is available.
-- Admin routes validate the logged-in user's current database role.
-- Login uses one account lookup; new passwords use bcrypt. Plaintext records
-  upgrade on their next successful login. **Remove this fallback** after migration.
-- Auth forms use CSRF tokens and never echo back a submitted password.
+## Implemented in this branch
 
-Not yet covered by this security stage: admin GET mutations without CSRF,
-cart GET mutations, owner checks for all profiles, inventory enforcement,
-atomic inventory enforcement, image-upload sanitization. Do not deploy publicly
-based on syntax and smoke tests alone.
-\nCheckout now recalculates price from product rows within a single transaction,\nlocks selected cart rows and validates ownership against the session.\nThe remaining work includes inventory decrement and thorough payment smoke tests.\n
-Cart add/update/delete routes now require POST+CSRF and check the session owns
-both the cart and selected cart-detail IDs. The product and cart templates
-submit protected forms instead of GET mutation links.
+- Prepared statements for mutable account, product/variant, category, cart,
+  comment, and order queries; single request-scoped PDO connection.
+- Bcrypt for all new passwords, verified login against one account record,
+  temporary plaintext-to-bcrypt upgrade on successful legacy login.
+- Database-verified admin authorization; CSRF protection on login/registration,
+  checkout, cart mutations, comments, and order acknowledgements.
+- Cart changes and checkout operate on the authenticated user's own records.
+- Checkout recalculates totals from product rows, validates quantities,
+  and writes order, line items and cart cleanup in one transaction.
+- Profiles display the current user's orders; order acknowledgement checks
+  owner and fulfillment status, not a user-supplied status string.
 
-Profile routes require login and cannot select another account from iduser;
-order confirmations check ownership and required status before applying a
-fixed transition via POST+CSRF. Comment forms are POST+CSRF as well.
+## Remaining production-readiness work
+
+- Legacy admin add/edit/delete form actions still have GET mutations and no
+  general CSRF middleware. Protect every admin form and convert GET deletion
+  links to POST before public deployment.
+- Decrement/check inventory atomically and add idempotent payment confirmation
+  and real payment-gateway verification where appropriate.
+- Review all remaining PHP template output escaping and validate image uploads
+  (size, MIME, random filename, storage restrictions).
+- Add database-level uniqueness for account username/email after cleaning
+  duplicates, then remove plaintext-password fallback once all accounts
+  have migrated or reset passwords.
+- Run full MySQL integration and browser tests, including rollback tests,
+  permissions, cart mutation, login with legacy passwords, and checkout.
+
+Lint and standalone smoke tests are insufficient to establish production safety.

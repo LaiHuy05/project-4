@@ -13,7 +13,7 @@ final class ClientSingleCheckoutController
         }
         try {
             $id_sp = CheckoutService::positiveInt($_GET['idsp'] ?? null, 'Sản phẩm');
-            $sp_quantity = CheckoutService::positiveInt($_GET['quantity'] ?? null, 'Số lượng');
+            $sp_quantity = CheckoutService::positiveInt($_GET['quantity'] ?? null, 'Số lượng', 100);
             $cd_option = trim((string) ($_GET['optionb'] ?? ''));
             $cd_optionColor = trim((string) ($_GET['optioncolorb'] ?? ''));
             if (strlen($cd_option) > 100 || strlen($cd_optionColor) > 100) {
