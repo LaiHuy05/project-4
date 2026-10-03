@@ -1,0 +1,17 @@
+name: PHP syntax
+on:
+  push:
+    paths:
+      - 'mvc/**'
+      - '.github/workflows/php-lint.yml'
+  pull_request:
+    paths:
+      - 'mvc/**'
+      - '.github/workflows/php-lint.yml'
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check PHP syntax across MVC application
+        run: find mvc -type f -name '*.php' -print0 | xargs -0 -n1 php -l
