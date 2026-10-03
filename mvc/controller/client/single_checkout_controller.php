@@ -1,115 +1,66 @@
 <?php
-/**
- * Client single checkout actions.
- * Database functions remain in mvc/query during this behavior-preserving refactor.
- */
+require_once dirname(__DIR__, 2) . '/service/CheckoutService.php';
 final class ClientSingleCheckoutController
 {
     public static function handle(string $client, $iduser = null): void
     {
-        switch ($client) {
-          case 'payOne':
-              $list_category = load_all_category(); // Load danh mục
-              $list_cartDetail = load_all_cartDetail(); // Load danh mục
-              $list_account = load_all_account(); // Load tài khoản
-              $listAll_product = load_all_product();
-              $mess = "";
-              $messNamePay = $messEmailPay = $messPhonePay = $messAddressPay = $messCountryPay = "";
-              $messCityPay = $messDistrictPay = $messCommunePay = "";
-              if (isset($_POST['btnPay'])) {
-                  // Lấy dữ liệu từ form thanh toán
-                  $namePay = trim($_POST['namePay']);
-                  $emailPay = trim($_POST['emailPay']);
-                  $phonePay = trim($_POST['phonePay']);
-                  $addressPay = trim($_POST['addressPay']);
-                  $countryPay = trim($_POST['countryPay']);
-                  $cityPay = trim($_POST['cityPay']);
-                  $districtPay = trim($_POST['districtPay']);
-                  $communePay = trim($_POST['communePay']);
-                  $messagePay = trim($_POST['messagePay']);
-                  $check_valid_order = true;
-                  // Kiểm tra từng trường dữ liệu
-                  if (empty($namePay)) {
-                      $messNamePay = "Tên không được trống!";
-                      $check_valid_order = false;
-                  }
-                  if (empty($emailPay)) {
-                      $messEmailPay = "Email không được để trống!";
-                      $check_valid_order = false;
-                  } elseif (!filter_var($emailPay, FILTER_VALIDATE_EMAIL)) {
-                      $messEmailPay = "Địa chỉ email không hợp lệ!";
-                      $check_valid_order = false;
-                  }
-                  if (empty($phonePay)) {
-                      $messPhonePay = "SĐT không được để trống!";
-                      $check_valid_order = false;
-                  } elseif (!preg_match('/^[0-9]{10,11}$/', $phonePay)) {
-                      $messPhonePay = "SĐT không hợp lệ!";
-                      $check_valid_order = false;
-                  }
-                  if (empty($addressPay)) {
-                      $messAddressPay = "Địa chỉ không được trống!";
-                      $check_valid_order = false;
-                  }
-                  if (empty($countryPay)) {
-                      $messCountryPay = "Quốc gia không được trống!";
-                      $check_valid_order = false;
-                  }
-                  if (empty($cityPay)) {
-                      $messCityPay = "Thành phố không được trống!";
-                      $check_valid_order = false;
-                  }
-                  if (empty($districtPay)) {
-                      $messDistrictPay = "Quận / Huyện không được trống!";
-                      $check_valid_order = false;
-                  }
-                  if (empty($communePay)) {
-                      $messCommunePay = "Xã / Phường không được trống!";
-                      $check_valid_order = false;
-                  }
-                  // Nếu hợp lệ, thêm thông tin đơn hàng
-                  if ($check_valid_order) {
-                      // Trạng thái đơn hàng (chờ xác nhận)
-                      $cd_option = $_GET['optionb'];
-                      $id_tk = $_GET['iduser'];
-                      $sp_quantity = $_GET['quantity'];
-                      $cd_optionColor = $_GET['optioncolorb'];
-                      $dh_status = "chờ xác nhận";
-                      $sp_quantity = $_GET['quantity'];
-                      $dh_totalamount = $_POST['sumSP'];
-                      $dh_ma = 'FS_' . mt_rand(100000, 999999);
-                      // Lặp qua từng sản phẩm trong giỏ hàng
-                      // Gọi hàm insert_order để lưu đơn hàng vào cơ sở dữ liệu
-                      $id_dh = insert_order(
-                          $namePay,
-                          $emailPay,
-                          $phonePay,
-                          $addressPay,
-                          $countryPay,
-                          $cityPay,
-                          $districtPay,
-                          $communePay,
-                          $messagePay,
-                          $dh_status,
-                          $dh_totalamount,
-                          $id_tk,
-                          $sp_quantity,
-                          $dh_ma
-                      );
-                      // Lấy ID sản phẩm từ URL
-                      $id_sp = $_GET['idsp'];
-                      insert_orderdetail(
-                          $id_dh,
-                          $id_sp,
-                          $sp_quantity,
-                          $cd_option,
-                          $cd_optionColor,
-                      );
-                      echo '<script> window.addEventListener("load", function() { showNotification(); }); </script>';
-                  }
-              }
-              include 'view/client/payOne.php';
-              break;
+        if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id'])) {
+            header('Location: ?client=login'); exit;
         }
+        $id_tk = (int) $_SESSION['user_id'];
+        if (isset($_GET['iduser']) && (string) $id_tk !== (string) $_GET['iduser']) {
+            http_response_code(403); exit('Không thể thanh toán cho tài khoản khác.');
+        }
+        try {
+            $id_sp = CheckoutService::positiveInt($_GET['idsp'] ?? null, 'Sản phẩm');
+            $sp_quantity = CheckoutService::positiveInt($_GET['quantity'] ?? null, 'Số lượng');
+            $cd_option = trim((string) ($_GET['optionb'] ?? ''));
+            $cd_optionColor = trim((string) ($_GET['optioncolorb'] ?? ''));
+            if (strlen($cd_option) > 100 || strlen($cd_optionColor) > 100) {
+                throw new InvalidArgumentException('Tùy chọn sản phẩm không hợp lệ.');
+            }
+            $product = load_one_product($id_sp);
+            if (!$product) throw new InvalidArgumentException('Sản phẩm không tồn tại.');
+            $summary = CheckoutService::totals([[
+                'cd_quantity' => $sp_quantity, 'sp_price' => $product['sp_price']
+            ]]);
+        } catch (InvalidArgumentException $invalid) {
+            http_response_code(400); exit($invalid->getMessage());
+        }
+        $singleTotal = $summary['total'];
+        $list_category = load_all_category();
+        $list_cartDetail = []; // No need to load other users' carts.
+        $listAll_product = load_all_product();
+        $current = load_one_account($id_tk);
+        $list_account = $current ? [$current] : [];
+        $list_cart = load_all_cart();
+        $mess = $messNamePay = $messEmailPay = $messPhonePay = '';
+        $messAddressPay = $messCountryPay = $messCityPay = '';
+        $messDistrictPay = $messCommunePay = '';
+        if (isset($_POST['btnPay'])) {
+            if (!Csrf::verify($_POST['csrf_token'] ?? null)) {
+                http_response_code(403); exit('Phiên biểu mẫu không hợp lệ. Hãy tải lại trang.');
+            }
+            $errors = CheckoutService::validateForm($_POST);
+            $messNamePay = $errors['namePay'] ?? '';
+            $messEmailPay = $errors['emailPay'] ?? '';
+            $messPhonePay = $errors['phonePay'] ?? '';
+            $messAddressPay = $errors['addressPay'] ?? '';
+            $messCountryPay = $errors['countryPay'] ?? '';
+            $messCityPay = $errors['cityPay'] ?? '';
+            $messDistrictPay = $errors['districtPay'] ?? '';
+            $messCommunePay = $errors['communePay'] ?? '';
+            if (!$errors) {
+                try {
+                    CheckoutService::createSingleOrder($id_tk, $id_sp, $sp_quantity,
+                        $cd_option, $cd_optionColor, $_POST);
+                    unset($_SESSION['csrf_token']);
+                    echo '<script>window.addEventListener("load",function(){showNotification();});</script>';
+                } catch (InvalidArgumentException $invalid) {
+                    $mess = $invalid->getMessage();
+                }
+            }
+        }
+        include 'view/client/payOne.php';
     }
 }

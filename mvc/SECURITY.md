@@ -12,6 +12,7 @@ DB_PASSWORD as server environment variables. Ensure MySQL uses InnoDB.
 - Auth forms use CSRF tokens and never echo back a submitted password.
 
 Not yet covered by this security stage: admin GET mutations without CSRF,
-cart GET mutations, owner checks for all profiles, server-calculated checkout,
+cart GET mutations, owner checks for all profiles, inventory enforcement,
 atomic inventory enforcement, image-upload sanitization. Do not deploy publicly
 based on syntax and smoke tests alone.
+\nCheckout now recalculates price from product rows within a single transaction,\nlocks selected cart rows and validates ownership against the session.\nThe remaining work includes inventory decrement and thorough payment smoke tests.\n

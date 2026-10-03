@@ -11,6 +11,7 @@ require_once $root . '/query/danh-muc.php';
 require_once $root . '/query/tai-khoan.php';
 require_once $root . '/query/don-hang.php';
 require_once $root . '/query/binh-luan.php';
+require_once $root . '/core/Csrf.php';
 
 final class ClientRouter
 {

@@ -16,4 +16,4 @@ jobs:
       - name: PHP lint
         run: find mvc -type f -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: Security smoke test
-        run: php mvc/tests/security_smoke.php
+        run: php mvc/tests/security_smoke.php && php mvc/tests/checkout_smoke.php

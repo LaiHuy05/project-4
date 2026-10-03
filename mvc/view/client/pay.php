@@ -13,6 +13,7 @@ if (!isset($_SESSION['quantity'])) {
         <h4>Địa chỉ nhận hàng</h4>
         <div class="addres-input">
             <form action="" method="POST">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
                 <div class="input-name">
                     <input
                         type="text"
@@ -159,7 +160,7 @@ if (!isset($_SESSION['quantity'])) {
         <?php
         // Giả sử list_products là mảng chứa các sản phẩm trong giỏ hàng
         // Lấy số lượng sản phẩm từ URL hoặc từ mảng
-        $quantities = isset($_GET['quantity']) ? explode(',', $_GET['quantity']) : [];
+        $quantities = array_column($list_cartDetail, 'cd_quantity');
 
         foreach ($listAll_product as $index => $product) {
             extract($product); // Lấy các thông tin sản phẩm từ mảng
@@ -194,13 +195,13 @@ if (!isset($_SESSION['quantity'])) {
         } ?>
 
         <div class="productPay-summary">
-            <h4>Tổng Số Lượng: <?= $_GET['totalquantity'] ?></h4>
+            <h4>Tổng Số Lượng: <?= $sp_quantity ?></h4>
         </div>
         <br>
         <hr><br>
         <div class="productPay-summary">
             <h3>Thành Tiền:</h3>
-            <p style="color: red; font-size: 20px; margin-top: 10px;"><?= number_format($_GET['totalamount'], 0, ',', '.') ?> <span>đ</span></p>
+            <p style="color: red; font-size: 20px; margin-top: 10px;"><?= number_format($dh_totalamount, 0, ',', '.') ?> <span>đ</span></p>
         </div>
     </div>
 </div>
