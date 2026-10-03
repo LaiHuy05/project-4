@@ -27,3 +27,9 @@ function load_cart_items_by_ids_for_user($userId,array $ids,$lock=false)
     if ($lock) $sql.=" FOR UPDATE";
     return pdo_query($sql,...array_merge([$userId],$ids));
 }
+
+function find_cart_id_for_user($userId)
+{
+    $id = pdo_query_value("SELECT gh_id FROM cart WHERE id_tk=? LIMIT 1", $userId);
+    return $id === false ? null : (int)$id;
+}

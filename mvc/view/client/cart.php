@@ -75,27 +75,25 @@ include "nav.php";
                                                         <h3><?= htmlspecialchars($sp_name) ?></h3>
                                                     </div>
                                                     <div>
-                                                        <h4>Dung lượng: <?= $cd_option  ?></h4>
+                                                        <h4>Dung lượng: <?= htmlspecialchars($cd_option, ENT_QUOTES, 'UTF-8') ?></h4>
                                                     </div>
                                                     <div>
-                                                        <h4>Màu: <?= $cd_optionColor ?></h4>
+                                                        <h4>Màu: <?= htmlspecialchars($cd_optionColor, ENT_QUOTES, 'UTF-8') ?></h4>
                                                     </div>
                                                     <div class="word-left-bottom">
                                                         <div><?= printPrice($sp_price) ?></div>
                                                         <div class="button-quantity">
                                                             <?php if ($cd_quantity <= 0) { ?>
-                                                                <a href=""><button class="plus">-</button></a>
+                                                                <button class="plus" disabled>-</button>
                                                             <?php } else { ?>
-                                                                <a href="?client=Cartdetailoss&idcd=<?= $cd_id ?>&idgh=<?= $gh_id ?>"><button class="plus">-</button></a>
+                                                                <form action="?client=Cartdetailoss" method="POST" style="display:inline"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token()) ?>"><input type="hidden" name="idcd" value="<?= (int)$cd_id ?>"><input type="hidden" name="idgh" value="<?= (int)$gh_id ?>"><button class="plus" type="submit">-</button></form>
                                                             <?php } ?>
                                                             <input class="one" value="<?= htmlspecialchars($cd_quantity) ?>"></input>
-                                                            <a href="?client=Cartdetailadd&idcd=<?= $cd_id ?>&idgh=<?= $gh_id ?>"><button class="plus">+</button></a>
+                                                            <form action="?client=Cartdetailadd" method="POST" style="display:inline"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token()) ?>"><input type="hidden" name="idcd" value="<?= (int)$cd_id ?>"><input type="hidden" name="idgh" value="<?= (int)$gh_id ?>"><button class="plus" type="submit">+</button></form>
                                                         </div>
                                                     </div>
                                                     <div class="multiple">
-                                                        <a style="color: black;" href="?client=cartdelete&id=<?= $cd_id ?>&idgh=<?= $gh_id  ?>">
-                                                            <i class="fa-solid fa-xmark"></i>
-                                                        </a>
+                                                        <form action="?client=cartdelete" method="POST" style="display:inline"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token()) ?>"><input type="hidden" name="idcd" value="<?= (int)$cd_id ?>"><input type="hidden" name="idgh" value="<?= (int)$gh_id ?>"><button type="submit" style="border:0;background:transparent;color:black;cursor:pointer" aria-label="Xóa sản phẩm"><i class="fa-solid fa-xmark"></i></button></form>
                                                     </div>
                                                     <div class="price-right-bottom">
                                                         <?= printPrice($itemTotal) ?>

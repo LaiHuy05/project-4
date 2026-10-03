@@ -118,7 +118,8 @@ include "nav.php";
                         </div>
 
                         <div class="content-two">
-                            <form action="" method="get">
+                            <form action="?client=cartdetail" method="POST">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token()) ?>">
                                 <div style="margin-bottom: 10px;"><span class="price-sale"
                                         style="color: #D70018; padding-right: 10px;"><?= printPrice($sp_price)  ?></span><span><del
                                             style="color: gray;">36.990.00đ</del></span></div>

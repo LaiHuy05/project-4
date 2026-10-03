@@ -16,3 +16,6 @@ cart GET mutations, owner checks for all profiles, inventory enforcement,
 atomic inventory enforcement, image-upload sanitization. Do not deploy publicly
 based on syntax and smoke tests alone.
 \nCheckout now recalculates price from product rows within a single transaction,\nlocks selected cart rows and validates ownership against the session.\nThe remaining work includes inventory decrement and thorough payment smoke tests.\n
+Cart add/update/delete routes now require POST+CSRF and check the session owns
+both the cart and selected cart-detail IDs. The product and cart templates
+submit protected forms instead of GET mutation links.
