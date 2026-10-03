@@ -68,7 +68,7 @@ final class AdminAccountController
         
                 $account = load_one_account($id);
                 $tk_user = $account['tk_user'];
-                $tk_password = $account['tk_password'];
+                // Never reveal stored hashes.
                 $tk_email = $account['tk_email'];
                 $tk_address = $account['tk_address'];
                 $id_role = $account['id_role'];
@@ -85,14 +85,12 @@ final class AdminAccountController
                     $id_role = trim($_POST['id_role']);
                     if ($user == '') {
                         $errors['user'] = 'Vui lòng điền tên tài khoản!';
-                    } elseif (check_duplicate_account($user)) {
+                    } elseif (check_duplicate_account($user, $id)) {
                         $errors['user'] = 'Tên tài khoản đã tồn tại!';
                     } elseif (strlen($user) < 5) {
                         $errors['user'] = 'Tên tài khoản phải dài ít nhất 5 ký tự!';
                     }
-                    if ($pass == '') {
-                        $errors['pass'] = 'Vui lòng điền mật khẩu!';
-                    } elseif (strlen($pass) < 6) {
+                    if ($pass !== '' && strlen($pass) < 6) {
                         $errors['pass'] = 'Mật khẩu phải dài ít nhất 6 ký tự!';
                     }
                     if ($email == '') {

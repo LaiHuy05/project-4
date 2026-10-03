@@ -14,11 +14,13 @@ require_once $root . '/query/pdo.php';
 require_once $root . '/query/thong-ke.php';
 require_once $root . '/query/tong-doanh-thu.php';
 require_once $root . '/query/gio-hang.php';
+require_once $root . '/middleware/require_admin.php';
 
 final class AdminRouter
 {
     public static function run(): void
     {
+        require_admin();
         $action = $_GET['admin'] ?? 'home';
         if (!is_string($action)) {
             http_response_code(400);

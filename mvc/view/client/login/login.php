@@ -7,6 +7,7 @@ include "view/client/nav.php";
 </head>
 <div class="container1">
     <form class="form-login" action="" method="post">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
         <div class="login-title">
             <h1>Đăng nhập với</h1>
         </div>
@@ -41,7 +42,7 @@ include "view/client/nav.php";
                     id="phone"
                     name="user"
                     placeholder="Nhập Tên Đăng Nhập"
-                    value="<?php if (isset($user) && !empty($user)) echo $user; ?>" />
+                    value="<?= htmlspecialchars($user ?? '', ENT_QUOTES, 'UTF-8') ?>" />
                 <?php if (!empty($messtk)): ?>
                     <i style="color: red;"><?php echo $messtk; ?></i>
                 <?php endif; ?>
@@ -55,7 +56,7 @@ include "view/client/nav.php";
                     id="password"
                     name="password"
                     placeholder="Nhập mật khẩu"
-                    value="<?php if (isset($password) && !empty($password)) echo $password; ?>" />
+                    autocomplete="current-password" />
                 <?php if (!empty($messmk)): ?>
                     <i style="color: red;"><?php echo $messmk; ?></i>
                 <?php endif; ?>
