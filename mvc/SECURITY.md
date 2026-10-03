@@ -36,3 +36,9 @@ DB_USER, and DB_PASSWORD through server environment settings.
   permissions, cart mutation, login with legacy passwords, and checkout.
 
 Lint and standalone smoke tests are insufficient to establish production safety.
+
+Dashboard revenue calculations now use one grouped SQL query cached for
+the duration of the HTTP request, rather than twelve separate month queries.
+The old `thang_1()` through `thang_12()` function names and array outputs
+remain compatible with existing templates. The order report uses the current
+calendar year rather than a hardcoded 2024 filter.

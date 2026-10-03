@@ -79,7 +79,7 @@ function report_totalamount()
 FROM 
     `order`
 WHERE 
-    YEAR(dh_orderdate) = 2024
+    dh_orderdate >= MAKEDATE(YEAR(CURDATE()), 1) AND dh_orderdate < MAKEDATE(YEAR(CURDATE())+1, 1)
 GROUP BY 
     YEAR(dh_orderdate), MONTH(dh_orderdate)
 ORDER BY 
