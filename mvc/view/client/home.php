@@ -89,21 +89,6 @@ include 'slideshow.php';
                 <?php } else { ?>
                 <div class="main-full">
                     <?php
-                    // 1. Dùng biến $iduser (được truyền từ controller) thay vì $_GET
-                    if (isset($iduser) && $iduser != null) {
-                        $isFound = false; // Biến kiểm tra xem đã tồn tại hay chưa
-                        foreach ($list_cart as $cart) {
-                            if ($cart['id_tk'] == $iduser) { // Fix ở đây
-                                $isFound = true;
-                                break; 
-                            }
-                        }
-                        if (!$isFound) {
-                            // Chỉ chèn dữ liệu khi đã check $iduser hợp lệ
-                            insert_cart($iduser);
-                        }
-                    }
-
                     foreach ($list_category as $category) :
                         extract($category);
                         $hasProducts = false;
@@ -124,7 +109,6 @@ include 'slideshow.php';
                                     foreach ($listAll_product as $product) :
                                         extract($product);
                                         if ($id_dm == $dm_id) {
-                                            // 2. Tao đã xóa vòng lặp list_account thừa thãi gây lỗi Warning ở đây
                                     ?>
                                             <div class="product-box">
                                                 <a href="?client=detail&iduser=<?= $iduser ?? '' ?>&id=<?= $sp_id ?>">

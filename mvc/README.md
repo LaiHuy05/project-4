@@ -1,59 +1,81 @@
 # FourSmart - PHP MVC
 
-Ứng dụng bán điện thoại viết bằng PHP + MySQL. Điểm vào chính là `mvc/index.php`.
+Ứng dụng bán điện thoại viết bằng PHP + MySQL.
 
-## Cấu trúc
+## Kiến trúc
+
+```text
+Request
+  -> index.php
+  -> Router
+  -> Controller
+  -> Model / Service
+  -> Database (PDO)
+  -> View
+```
+
+## Cấu trúc chính
 
 ```text
 mvc/
-  index.php                  Front controller
+  index.php
   core/
-    ActionRouter.php         Điều hướng action đến controller
-    Csrf.php                 Tạo và kiểm tra CSRF token
+    ActionRouter.php
+    Csrf.php
+    Database.php
+    bootstrap.php
   middleware/
-    require_admin.php        Kiểm tra quyền admin
+    require_admin.php
   controller/
-    admin/                   Chức năng quản trị
-    client/                  Chức năng khách hàng
-  query/                     Truy vấn MySQL qua PDO
+    admin/
+    client/
+  model/
+    AccountModel.php
+    CategoryModel.php
+    ProductModel.php
+    CartModel.php
+    OrderModel.php
+    CommentModel.php
+    DashboardModel.php
   service/
-    CheckoutService.php      Logic thanh toán và transaction
+    CheckoutService.php
   view/
-    admin/                   Giao diện quản trị
-    client/                  Giao diện khách hàng
-    assets/                  CSS và JavaScript
-  upload/                    Ảnh sản phẩm
-  migrations/                Thay đổi cấu trúc database
-  tests/                     Smoke test (giữ lại)
+    admin/
+    client/
+    assets/
+  upload/
+  migrations/
+  tests/
 ```
 
-## Luồng chạy
+## Vai trò từng tầng
 
-`index.php` -> router client/admin -> controller -> query/service -> view.
+- **Controller**: nhận request, kiểm tra dữ liệu, gọi Model/Service và chọn View.
+- **Model**: chứa toàn bộ truy vấn và thao tác dữ liệu theo từng nghiệp vụ.
+- **Service**: chứa logic nghiệp vụ phức tạp; hiện tại thanh toán nằm trong `CheckoutService`.
+- **Database**: `core/Database.php` quản lý PDO, prepared statement và transaction.
+- **View**: chỉ hiển thị dữ liệu; không truy vấn database trực tiếp.
 
-- Client route dùng tham số `?client=...`.
-- Admin route dùng `?act=admin&admin=...`.
-- Admin được kiểm tra quyền bởi `middleware/require_admin.php`.
-- Thanh toán đi qua `CheckoutService` để tính lại tổng tiền từ database và ghi đơn hàng trong transaction.
+Thư mục `query/` cũ đã được thay bằng các Model thật để đúng luồng MVC hơn.
 
 ## Database
 
-Mặc định dùng MySQL database `duan1`. Có thể cấu hình bằng biến môi trường:
+Mặc định dùng MySQL database `duan1`. Có thể cấu hình bằng:
 
 - `DB_HOST`
 - `DB_NAME`
 - `DB_USER`
 - `DB_PASSWORD`
 
-Trước khi dùng mật khẩu bcrypt, chạy migration:
+Trước khi dùng bcrypt, chạy:
 
-```sql
+```text
 mvc/migrations/2026-10-03_expand_password_column.sql
 ```
 
-## Kiểm thử
+## Test
 
-Các file trong `mvc/tests/` được giữ lại:
+Giữ nguyên các smoke test:
 
 ```bash
 php mvc/tests/security_smoke.php
@@ -61,15 +83,10 @@ php mvc/tests/checkout_smoke.php
 php mvc/tests/revenue_smoke.php
 ```
 
-Kiểm tra cú pháp toàn bộ PHP:
+Kiểm tra cú pháp PHP:
 
 ```bash
 find mvc -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 ```
 
 GitHub Actions trong `.github/workflows/php-lint.yml` tự chạy lint và các smoke test.
-
-## Ghi chú
-
-Dự án không còn dùng JSON Server/Node.js, vì vậy các file `package.json`, `package-lock.json`
-và các model class rỗng/không được gọi đã được loại bỏ để cấu trúc dễ đọc hơn.

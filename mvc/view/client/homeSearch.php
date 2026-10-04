@@ -1,35 +1,8 @@
 <?php
-include "nav.php";
+include 'nav.php';
 include 'slideshow.php';
-
-// Kiểm tra nếu có từ khóa tìm kiếm
-$searchKey = isset($_GET['search']) ? $_GET['search'] : '';
-$sortOrder = isset($_GET['sort']) ? $_GET['sort'] : '';
-
-// Mảng sản phẩm đã tìm kiếm
-$productTM = [];
-$listAll_product = load_all_product(); // Lấy toàn bộ sản phẩm từ cơ sở dữ liệu
-
-// Lọc sản phẩm theo từ khóa tìm kiếm
-if (!empty($searchKey)) {
-    foreach ($listAll_product as $product) {
-        if (stripos(strtolower($product['sp_name']), strtolower($searchKey)) !== false) {
-            $productTM[] = $product;
-        }
-    }
-}
-
-// Sắp xếp sản phẩm nếu có yêu cầu
-if ($sortOrder === 'asc') {
-    usort($productTM, function ($a, $b) {
-        return $a['sp_price'] <=> $b['sp_price']; // Sắp xếp tăng dần
-    });
-} elseif ($sortOrder === 'desc') {
-    usort($productTM, function ($a, $b) {
-        return $b['sp_price'] <=> $a['sp_price']; // Sắp xếp giảm dần
-    });
-}
 ?>
+
 <style>
     .filter-buttons {
         margin: 5px 0;
@@ -76,14 +49,11 @@ if ($sortOrder === 'asc') {
                 <div>Không có sản phẩm</div>
             <?php } else { ?>
                 <div class="main-full">
-                    <!-- Phần chọn sắp xếp -->
                     <div class="filter-buttons">
                         <legend>Sắp Xếp Theo Giá Sản Phẩm</legend>
                         <button type="button" onclick="updateSort('asc')">Tăng dần</button>
                         <button type="button" onclick="updateSort('desc')">Giảm dần</button>
                     </div>
-
-                    <!-- Hiển thị sản phẩm -->
                     <div class="product">
                         <?php foreach ($productTM as $product): ?>
                             <div class="product-box">

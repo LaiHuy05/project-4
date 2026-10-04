@@ -186,16 +186,6 @@ include "nav.php";
                                     </div>
                                 <?php } else { ?>
                                     <div class="letter-product">
-
-                                        <?php $idgh = 0;
-                                        foreach ($list_cart as $cart) {
-                                            extract($cart);
-                                            if ($_GET['iduser'] == $id_tk) {
-                                                $idgh = $gh_id;
-                                                break;
-                                            }
-                                        }
-                                        ?>
                                         <div class="letter-two-dad">
                                             <input type="hidden" name="id" value="<?= $_GET['id'] ?>">
                                             <input type="hidden" name="idgh" value="<?= $idgh ?>">
