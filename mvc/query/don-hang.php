@@ -32,7 +32,7 @@ function insert_order(
         id_tk, sp_quantity, dh_ma
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?)';
 
-    return pdo_execute_return_last_insert_id(
+    return pdo_insert(
         $sql,
         $name,
         $email,
@@ -69,22 +69,14 @@ function load_all_orderdetail()
 function insert_orderdetail($orderId, $productId, $quantity, $memory, $color)
 {
     pdo_execute(
-        'INSERT INTO orderdetail(id_dh, id_sp, ct_quantity, od_option, od_optionColor) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO orderdetail(id_dh, id_sp, ct_quantity, od_option, od_optionColor)
+         VALUES (?, ?, ?, ?, ?)',
         $orderId,
         $productId,
         $quantity,
         $memory,
         $color
     );
-}
-
-function pdo_execute_return_last_insert_id($sql, ...$args)
-{
-    $connection = pdo_get_connection();
-    $statement = $connection->prepare($sql);
-    $statement->execute($args);
-
-    return $connection->lastInsertId();
 }
 
 function load_orders_for_user($userId)
@@ -98,7 +90,8 @@ function load_orders_for_user($userId)
 function load_order_details_for_user($userId)
 {
     return pdo_query(
-        'SELECT d.* FROM orderdetail d
+        'SELECT d.*
+         FROM orderdetail d
          JOIN `order` o ON o.dh_id = d.id_dh
          WHERE o.id_tk = ?',
         $userId
