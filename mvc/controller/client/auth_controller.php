@@ -6,27 +6,19 @@ final class ClientAuthController
     public static function handle(string $client, $iduser = null): void
     {
         $list_category = load_all_category();
-        $list_account = [];
-
-        if (isset($_SESSION['user_id']) && is_numeric($_SESSION['user_id'])) {
-            $currentAccount = load_one_account((int) $_SESSION['user_id']);
-            if ($currentAccount) {
-                $list_account[] = $currentAccount;
-            }
-        }
 
         switch ($client) {
             case 'login':
-                self::login($list_category, $list_account);
+                self::login($list_category);
                 break;
 
             case 'register':
-                self::register($list_category, $list_account);
+                self::register($list_category);
                 break;
         }
     }
 
-    private static function login(array $list_category, array $list_account): void
+    private static function login(array $list_category): void
     {
 
         $messtk = '';
@@ -76,7 +68,7 @@ final class ClientAuthController
         include 'view/client/login/login.php';
     }
 
-    private static function register(array $list_category, array $list_account): void
+    private static function register(array $list_category): void
     {
 
         $messName = '';

@@ -4,7 +4,6 @@ final class ClientProductController
     public static function handle(string $client, $iduser = null): void
     {
         $list_category = load_all_category();
-        $list_account = load_all_account();
 
         switch ($client) {
             case 'detail':

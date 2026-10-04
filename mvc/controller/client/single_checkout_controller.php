@@ -45,8 +45,6 @@ final class ClientSingleCheckoutController
         $list_category = load_all_category();
         $listAll_product = load_all_product();
 
-        $current = load_one_account($id_tk);
-        $list_account = $current ? [$current] : [];
 
         $mess = '';
         $messNamePay = '';

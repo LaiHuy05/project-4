@@ -133,11 +133,13 @@ include "nav.php";
                                 <div class="product">
                                     <?php foreach ($listAll_product as $product) : extract($product);
                                         if ($id_dm == $dm_id) {
-                                            foreach ($list_account as $account): extract($account);
-                                                if ($_GET['iduser'] == $tk_id) {
+                                            $detailUrl = '?client=detail&id=' . (int) $sp_id;
+                                            if (isset($_SESSION['user_id'])) {
+                                                $detailUrl .= '&iduser=' . (int) $_SESSION['user_id'];
+                                            }
                                     ?>
                                                     <div class="product-box">
-                                                        <a href="?client=detail&iduser=<?= $tk_id ?>&id=<?= $sp_id ?>">
+                                                        <a href="<?= $detailUrl ?>">
                                                             <div class="product-box-tag">
                                                                 <p>Trả góp 0%</p>
                                                             </div>
