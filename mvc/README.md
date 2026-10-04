@@ -1,79 +1,75 @@
-# PHP MVC storefront
+# FourSmart - PHP MVC
 
-The application entry point is `mvc/index.php`. Route names and query-string
-links are unchanged: `?act=admin&admin=productList` and
-`?client=cart` still go through the same front controller.
+Ứng dụng bán điện thoại viết bằng PHP + MySQL. Điểm vào chính là `mvc/index.php`.
 
-## Layout
+## Cấu trúc
 
 ```text
 mvc/
-  index.php                 Single front controller
-  core/ActionRouter.php     Whitelisted action dispatcher
+  index.php                  Front controller
+  core/
+    ActionRouter.php         Điều hướng action đến controller
+    Csrf.php                 Tạo và kiểm tra CSRF token
+  middleware/
+    require_admin.php        Kiểm tra quyền admin
   controller/
-    admin/
-      admin_controller.php  Entry and route definitions
-      home_controller.php
-      category_controller.php
-      product_controller.php
-      product_color_controller.php
-      product_memory_controller.php
-      account_controller.php
-      comment_controller.php
-      order_controller.php
-    client/
-      client_controller.php Entry and route definitions
-      home_controller.php
-      auth_controller.php
-      product_controller.php
-      cart_controller.php
-      checkout_controller.php
-      single_checkout_controller.php
-      profile_controller.php
-      comment_controller.php
-  model/                    Existing domain class stubs
-  query/                    Existing SQL and PDO functions (legacy data access)
-  view/admin/               Existing admin templates
-  view/client/              Existing storefront templates
-  view/assets/              Existing CSS and JavaScript
-  upload/                   Existing product images
+    admin/                   Chức năng quản trị
+    client/                  Chức năng khách hàng
+  query/                     Truy vấn MySQL qua PDO
+  service/
+    CheckoutService.php      Logic thanh toán và transaction
+  view/
+    admin/                   Giao diện quản trị
+    client/                  Giao diện khách hàng
+    assets/                  CSS và JavaScript
+  upload/                    Ảnh sản phẩm
+  migrations/                Thay đổi cấu trúc database
+  tests/                     Smoke test (giữ lại)
 ```
 
-## Refactor details
+## Luồng chạy
 
-- All 28 admin actions and 19 storefront actions were assigned to feature
-  controllers, without rewriting SQL or changing template variable names.
-- Route lookup accepts only predefined actions; user input cannot form a PHP
-  include path. Missing routes return HTTP 404.
-- The duplicate `orderUpdate` switch label was removed, and the storefront
-  `profile` action now uses the existing view path.
-- The standalone `mvc/api/` JSON endpoints were intentionally **deleted**.
-  Any independent integrations still calling `/mvc/api/*.php` need to be
-  migrated or retired; they are **not** silently recreated here.
-- SQL helpers remain in `query/`, rather than moving them and breaking
-  existing relative includes. They can be migrated to proper repository classes
-  separately once there are database-backed integration tests.
+`index.php` -> router client/admin -> controller -> query/service -> view.
 
-## Local verification
+- Client route dùng tham số `?client=...`.
+- Admin route dùng `?act=admin&admin=...`.
+- Admin được kiểm tra quyền bởi `middleware/require_admin.php`.
+- Thanh toán đi qua `CheckoutService` để tính lại tổng tiền từ database và ghi đơn hàng trong transaction.
 
-PHP 7.4+ and MySQL with the existing `duan1` database are required.
-Point the web server document root at `mvc/` or visit its `index.php`.
-Update the database connection in `query/pdo.php` for your environment.
+## Database
 
-Syntax check:
+Mặc định dùng MySQL database `duan1`. Có thể cấu hình bằng biến môi trường:
+
+- `DB_HOST`
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+
+Trước khi dùng mật khẩu bcrypt, chạy migration:
+
+```sql
+mvc/migrations/2026-10-03_expand_password_column.sql
+```
+
+## Kiểm thử
+
+Các file trong `mvc/tests/` được giữ lại:
+
+```bash
+php mvc/tests/security_smoke.php
+php mvc/tests/checkout_smoke.php
+php mvc/tests/revenue_smoke.php
+```
+
+Kiểm tra cú pháp toàn bộ PHP:
+
 ```bash
 find mvc -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 ```
 
-Smoke-test these routes against a disposable database:
+GitHub Actions trong `.github/workflows/php-lint.yml` tự chạy lint và các smoke test.
 
-1. Storefront home, search, product detail and category.
-2. Login, registration, cart add/update/remove and both checkout flows.
-3. Profile, order status updates and comments.
-4. Admin dashboard and category/product/color/memory/account/comment/order CRUD.
-5. Verify unknown actions return 404 and that the old `api/` paths are gone.
+## Ghi chú
 
-**Security follow-up:** The existing application still needs an access-control
-and CSRF review for admin and state-changing GET routes, parameter validation,
-upload handling and password storage. Moving controllers does not itself secure
-those actions; do not expose it publicly before reviewing them.
+Dự án không còn dùng JSON Server/Node.js, vì vậy các file `package.json`, `package-lock.json`
+và các model class rỗng/không được gọi đã được loại bỏ để cấu trúc dễ đọc hơn.
