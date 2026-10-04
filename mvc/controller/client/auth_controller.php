@@ -17,18 +17,17 @@ final class ClientAuthController
 
         switch ($client) {
             case 'login':
-                self::login();
+                self::login($list_category, $list_account);
                 break;
 
             case 'register':
-                self::register();
+                self::register($list_category, $list_account);
                 break;
         }
     }
 
-    private static function login(): void
+    private static function login(array $list_category, array $list_account): void
     {
-        global $list_category, $list_account;
 
         $messtk = '';
         $messmk = '';
@@ -77,9 +76,8 @@ final class ClientAuthController
         include 'view/client/login/login.php';
     }
 
-    private static function register(): void
+    private static function register(array $list_category, array $list_account): void
     {
-        global $list_category, $list_account;
 
         $messName = '';
         $messAddress = '';
