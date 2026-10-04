@@ -19,7 +19,7 @@ final class ClientCheckoutController
 
         try {
             $arrayID = CheckoutService::parseItemIds($_GET['cartdetailid'] ?? null);
-            $list_cartDetail = load_cart_items_by_ids_for_user($id_tk, $arrayID);
+            $list_cartDetail = CartModel::itemsByIdsForUser($id_tk, $arrayID);
 
             if (count($list_cartDetail) !== count($arrayID)) {
                 throw new InvalidArgumentException('Giỏ hàng không hợp lệ hoặc không thuộc tài khoản.');
@@ -33,8 +33,8 @@ final class ClientCheckoutController
 
         $dh_totalamount = $summary['total'];
         $sp_quantity = $summary['quantity'];
-        $list_category = load_all_category();
-        $listAll_product = load_all_product();
+        $list_category = CategoryModel::all();
+        $listAll_product = ProductModel::all();
 
 
         $mess = '';

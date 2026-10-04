@@ -15,10 +15,10 @@ final class ClientCommentController
         }
         $productId = filter_var($_POST['idsp'] ?? null,FILTER_VALIDATE_INT);
         $content = trim((string)($_POST['comment'] ?? ''));
-        if (!$productId || !load_one_product($productId) || $content === '' || (function_exists('mb_strlen') ? mb_strlen($content) : strlen($content)) > 1000) {
+        if (!$productId || !ProductModel::find($productId) || $content === '' || (function_exists('mb_strlen') ? mb_strlen($content) : strlen($content)) > 1000) {
             http_response_code(400); exit('Đánh giá không hợp lệ.');
         }
-        insert_comment($content,(int)$uid,$productId);
+        CommentModel::create($content,(int)$uid,$productId);
         header('Location: ?client=detail&iduser='.(int)$uid.'&id='.$productId); exit;
     }
 }

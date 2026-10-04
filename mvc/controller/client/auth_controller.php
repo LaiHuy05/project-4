@@ -5,7 +5,7 @@ final class ClientAuthController
 {
     public static function handle(string $client, $iduser = null): void
     {
-        $list_category = load_all_category();
+        $list_category = CategoryModel::all();
 
         switch ($client) {
             case 'login':
@@ -43,9 +43,9 @@ final class ClientAuthController
             }
 
             if ($messtk === '' && $messmk === '') {
-                $account = find_account_by_username($user);
+                $account = AccountModel::findByUsername($user);
 
-                if ($account && verify_account_password($account, $password)) {
+                if ($account && AccountModel::verifyPassword($account, $password)) {
                     session_regenerate_id(true);
 
                     $_SESSION['login'] = $account['tk_user'];
@@ -117,12 +117,12 @@ final class ClientAuthController
                 && $messConfirmPassword === '';
 
             if ($valid) {
-                if (check_duplicate_account($name)) {
+                if (AccountModel::usernameExists($name)) {
                     $mess = 'Tên đăng nhập đã tồn tại!';
-                } elseif (check_duplicate_email($emailRegister)) {
+                } elseif (AccountModel::emailExists($emailRegister)) {
                     $mess = 'Email đã tồn tại!';
                 } else {
-                    insert_account($name, $password, $emailRegister, $address, 2);
+                    AccountModel::create($name, $password, $emailRegister, $address, 2);
                     $mess = 'Đăng ký thành công!';
                     $name = '';
                     $address = '';

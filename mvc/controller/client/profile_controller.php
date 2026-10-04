@@ -17,14 +17,14 @@ final class ClientProfileController
             exit('Không thể xem hồ sơ tài khoản khác.');
         }
 
-        $account = load_one_account($userId);
+        $account = AccountModel::find($userId);
         if (!$account) {
             http_response_code(401);
             exit('Tài khoản không tồn tại.');
         }
 
         $list_account = [$account];
-        $list_category = load_all_category();
+        $list_category = CategoryModel::all();
 
         switch ($client) {
             case 'profile':
@@ -37,9 +37,9 @@ final class ClientProfileController
 
             case 'payProfile':
             case 'payfinal':
-                $listAll_product = load_all_product();
-                $list_orderdetail = load_order_details_for_user($userId);
-                $list_order = load_orders_for_user($userId);
+                $listAll_product = ProductModel::all();
+                $list_orderdetail = OrderModel::detailsForUser($userId);
+                $list_order = OrderModel::forUser($userId);
 
                 include $client === 'payProfile'
                     ? 'view/client/profile/profile-pay.php'
@@ -71,7 +71,7 @@ final class ClientProfileController
             exit('Mã đơn hàng không hợp lệ.');
         }
 
-        $order = load_one_order($orderId);
+        $order = OrderModel::find($orderId);
         if (!$order || (int) $order['id_tk'] !== $userId) {
             http_response_code(403);
             exit('Đơn hàng không thuộc tài khoản.');
@@ -82,7 +82,7 @@ final class ClientProfileController
             exit('Đơn hàng chưa thể xác nhận đã nhận.');
         }
 
-        update_order($orderId, 'Đã nhận hàng');
+        OrderModel::updateStatus($orderId, 'Đã nhận hàng');
         header('Location: ?client=payfinal&iduser=' . $userId);
         exit;
     }

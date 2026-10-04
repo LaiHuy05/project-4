@@ -27,7 +27,7 @@ final class ClientSingleCheckoutController
                 throw new InvalidArgumentException('Tùy chọn sản phẩm không hợp lệ.');
             }
 
-            $product = load_one_product($id_sp);
+            $product = ProductModel::find($id_sp);
             if (!$product) {
                 throw new InvalidArgumentException('Sản phẩm không tồn tại.');
             }
@@ -42,8 +42,8 @@ final class ClientSingleCheckoutController
         }
 
         $singleTotal = $summary['total'];
-        $list_category = load_all_category();
-        $listAll_product = load_all_product();
+        $list_category = CategoryModel::all();
+        $listAll_product = ProductModel::all();
 
 
         $mess = '';
