@@ -4,12 +4,12 @@ final class AdminCommentController
     public static function handle(string $admin, $id = null): void
     {
         if ($admin === 'commentList') {
-            $list_comment = load_all_comment();
+            $list_comment = CommentModel::all();
             include 'view/admin/comment/list.php';
             return;
         }
 
-        delete_comment($id);
+        CommentModel::delete($id);
         header('Location: ?act=admin&admin=commentList');
         exit;
     }

@@ -5,14 +5,14 @@ final class AdminProductColorController
     {
         switch ($admin) {
             case 'productColor-List':
-                $list_product = load_all_product();
-                $list_product_color = load_all_product_color();
+                $list_product = ProductModel::all();
+                $list_product_color = ProductModel::colors();
 
                 include 'view/admin/product/product-color/list.php';
                 break;
 
             case 'productColor-Add':
-                $list_product = load_all_product();
+                $list_product = ProductModel::all();
                 $thongBao = '';
                 $thongBaoLoiTen = '';
                 $thongBaoLoiSP = '';
@@ -29,7 +29,7 @@ final class AdminProductColorController
                     }
 
                     if ($thongBaoLoiTen === '' && $thongBaoLoiSP === '') {
-                        insert_product_color($name, $id_sp);
+                        ProductModel::addColor($name, $id_sp);
                         $thongBao = 'Thêm thành công';
                     }
                 }
@@ -38,7 +38,7 @@ final class AdminProductColorController
                 break;
 
             case 'productColor-Update':
-                $product_color = load_one_product_color($id);
+                $product_color = ProductModel::findColor($id);
 
                 if (!$product_color) {
                     http_response_code(404);
@@ -56,7 +56,7 @@ final class AdminProductColorController
                     if ($name === '') {
                         $thongBaoLoiTen = 'Vui lòng nhập tên màu!';
                     } else {
-                        update_product_color($id, $name, $id_sp);
+                        ProductModel::updateColor($id, $name, $id_sp);
                         $pc_name = $name;
                         $thongBao = 'Sửa thành công';
                     }
@@ -67,7 +67,7 @@ final class AdminProductColorController
 
             case 'productColor-Delete':
                 $productId = (int) ($_GET['idsp'] ?? 0);
-                delete_product_color($id);
+                ProductModel::deleteColor($id);
                 header('Location: ?act=admin&admin=productDetail&id=' . $productId);
                 exit;
         }

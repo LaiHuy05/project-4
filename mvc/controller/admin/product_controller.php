@@ -5,8 +5,8 @@ final class AdminProductController
     {
         switch ($admin) {
             case 'productList':
-                $list_product = load_all_product();
-                $list_category = load_all_category();
+                $list_product = ProductModel::all();
+                $list_category = CategoryModel::all();
                 $resultProduct = [];
 
                 if (isset($_POST['btnSearch'])) {
@@ -38,7 +38,7 @@ final class AdminProductController
                 break;
 
             case 'productDelete':
-                delete_product($id);
+                ProductModel::delete($id);
                 header('Location: ?act=admin&admin=productList');
                 exit;
         }
@@ -46,7 +46,7 @@ final class AdminProductController
 
     private static function addProduct(): void
     {
-        $list_category = load_all_category();
+        $list_category = CategoryModel::all();
 
         $thongBao = '';
         $thongBaoLoiTen = '';
@@ -95,7 +95,7 @@ final class AdminProductController
                 && $thongBaoLoiDM === ''
             ) {
                 $sp_ma = 'SP_' . random_int(100000, 999999);
-                insert_product($name, $image, $price, $quantity, $describe, $id_dm, $sp_ma, $sp_pricedel);
+                ProductModel::create($name, $image, $price, $quantity, $describe, $id_dm, $sp_ma, $sp_pricedel);
                 $thongBao = 'Thêm mới thành công';
             }
         }
@@ -105,14 +105,14 @@ final class AdminProductController
 
     private static function updateProduct($id): void
     {
-        $product = load_one_product($id);
+        $product = ProductModel::find($id);
 
         if (!$product) {
             http_response_code(404);
             exit('Sản phẩm không tồn tại.');
         }
 
-        $list_category = load_all_category();
+        $list_category = CategoryModel::all();
 
         $sp_id = $product['sp_id'];
         $sp_name = $product['sp_name'];
@@ -173,7 +173,7 @@ final class AdminProductController
                 && $thongBaoLoiMoTa === ''
                 && $thongBaoLoiDM === ''
             ) {
-                update_product($sp_id, $name, $image, $price, $quantity, $describe, $id_dm, $sp_pricedel);
+                ProductModel::update($sp_id, $name, $image, $price, $quantity, $describe, $id_dm, $sp_pricedel);
                 $thongBao = 'Sửa thành công';
 
                 $sp_name = $name;
@@ -190,7 +190,7 @@ final class AdminProductController
             if ($colorName === '') {
                 $thongBaoLoiTenMau = 'Vui lòng nhập tên màu!';
             } else {
-                insert_product_color($colorName, $sp_id);
+                ProductModel::addColor($colorName, $sp_id);
                 $thongBaoMau = 'Thêm thành công';
             }
         }
@@ -201,7 +201,7 @@ final class AdminProductController
             if ($memoryName === '') {
                 $thongBaoLoiTenBN = 'Vui lòng nhập tên bộ nhớ!';
             } else {
-                insert_product_memory($memoryName, $sp_id);
+                ProductModel::addMemory($memoryName, $sp_id);
                 $thongBaoBN = 'Thêm thành công';
             }
         }
@@ -211,17 +211,17 @@ final class AdminProductController
 
     private static function showProduct($id): void
     {
-        $product = load_one_product($id);
+        $product = ProductModel::find($id);
 
         if (!$product) {
             http_response_code(404);
             exit('Sản phẩm không tồn tại.');
         }
 
-        $list_product = load_all_product();
-        $list_category = load_all_category();
-        $list_product_color = load_all_product_color();
-        $list_product_memory = load_all_product_memory();
+        $list_product = ProductModel::all();
+        $list_category = CategoryModel::all();
+        $list_product_color = ProductModel::colors();
+        $list_product_memory = ProductModel::memories();
 
         $sp_id = $product['sp_id'];
         $sp_name = $product['sp_name'];

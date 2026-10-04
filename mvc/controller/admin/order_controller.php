@@ -5,7 +5,7 @@ final class AdminOrderController
     {
         switch ($admin) {
             case 'orderList':
-                $list_order = load_all_order();
+                $list_order = OrderModel::all();
                 $resultOrder = [];
 
                 if (isset($_POST['btnSearch'])) {
@@ -25,17 +25,17 @@ final class AdminOrderController
                 break;
 
             case 'orderDetail':
-                $list_order = load_all_order();
-                $list_orderdetail = load_all_orderdetail();
-                $listAll_product = load_all_product();
-                $list_account = load_all_account();
+                $list_order = OrderModel::all();
+                $list_orderdetail = OrderModel::details();
+                $listAll_product = ProductModel::all();
+                $list_account = AccountModel::all();
 
                 include 'view/admin/order/oderdetail.php';
                 break;
 
             case 'orderUpdate':
                 $orderId = (int) ($_GET['dhid'] ?? 0);
-                $load_one_order = load_one_order($orderId);
+                $load_one_order = OrderModel::find($orderId);
 
                 if (!$load_one_order) {
                     http_response_code(404);
@@ -48,8 +48,8 @@ final class AdminOrderController
                     $statusPay = trim((string) ($_POST['statusPay'] ?? ''));
 
                     if ($statusPay !== '') {
-                        update_order($orderId, $statusPay);
-                        $load_one_order = load_one_order($orderId);
+                        OrderModel::updateStatus($orderId, $statusPay);
+                        $load_one_order = OrderModel::find($orderId);
                         $mess = 'Cập nhật thành công!';
                         header("Refresh: 1.5; url='?act=admin&admin=orderList'");
                     }
@@ -60,7 +60,7 @@ final class AdminOrderController
 
             case 'orderDelete':
                 $orderId = (int) ($_GET['dhid'] ?? 0);
-                delete_order($orderId);
+                OrderModel::delete($orderId);
                 header('Location: ?act=admin&admin=orderList');
                 exit;
         }

@@ -3,16 +3,18 @@ final class AdminHomeController
 {
     public static function handle(string $admin, $id = null): void
     {
-        $count_product = count_product();
-        $count_category = count_category();
-        $count_order = count_order();
-        $count_account = count_account();
-        $count_profit = count_profit();
+        $summary = DashboardModel::summary();
 
-        $top_selling = top_product_selling();
+        $productCount = (int) $summary['product_count'];
+        $categoryCount = (int) $summary['category_count'];
+        $orderCount = (int) $summary['order_count'];
+        $accountCount = (int) $summary['account_count'];
+        $profit = (float) $summary['profit'];
+
+        $top_selling = ProductModel::topSelling();
 
         $monthlyRevenue = array_fill(1, 12, 0);
-        foreach (current_year_monthly_revenue() as $month => $revenue) {
+        foreach (OrderModel::currentYearMonthlyRevenue() as $month => $revenue) {
             $monthlyRevenue[(int) $month] = (float) $revenue;
         }
 

@@ -10,7 +10,7 @@ include 'nav.php';
                     <i class="fas fa-dollar-sign"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-number"><?php if (isset($count_profit)) echo number_format($count_profit[0]['tong_gia'], 0, ',', '.'); ?>đ</span>
+                    <span class="stat-number"><?= number_format($profit, 0, ',', '.') ?>đ</span>
                     <h3 class="stat-number">Doanh Thu</h3>
                 </div>
             </div>
@@ -30,7 +30,7 @@ include 'nav.php';
                     <i class="fas fa-shopping-cart"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-number"><?php if (isset($count_order)) echo $count_order[0]['COUNT(*)']; ?></span>
+                    <span class="stat-number"><?= $orderCount ?></span>
                     <h3 class="stat-number">Đơn Hàng</h3>
                 </div>
             </div>
@@ -50,7 +50,7 @@ include 'nav.php';
                     <i class="fas fa-user-friends"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-number"><?php if (isset($count_account)) echo $count_account[0]['COUNT(*)']; ?></span>
+                    <span class="stat-number"><?= $accountCount ?></span>
                     <h3 class="stat-number">Tài Khoản</h3>
                 </div>
             </div>
@@ -70,7 +70,7 @@ include 'nav.php';
                     <i class="fas fa-list"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-number"><?php if (isset($count_category)) echo $count_category[0]['COUNT(*)']; ?></span>
+                    <span class="stat-number"><?= $categoryCount ?></span>
                     <h3 class="stat-number">Danh Mục</h3>
                 </div>
             </div>
@@ -92,7 +92,7 @@ include 'nav.php';
                     <i class="fas fa-box"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-number"><?php if (isset($count_product)) echo $count_product[0]['COUNT(*)']; ?></span>
+                    <span class="stat-number"><?= $productCount ?></span>
                     <h3 class="stat-number">Sản Phẩm</h3>
                 </div>
             </div>

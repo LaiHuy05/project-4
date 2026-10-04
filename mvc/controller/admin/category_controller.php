@@ -5,7 +5,7 @@ final class AdminCategoryController
     {
         switch ($admin) {
             case 'categoryList':
-                $list_category = load_all_category();
+                $list_category = CategoryModel::all();
                 include 'view/admin/category/list.php';
                 break;
 
@@ -18,7 +18,7 @@ final class AdminCategoryController
                     if ($name === '') {
                         $thongBao = 'Vui lòng điền tên danh mục!';
                     } else {
-                        insert_category($name);
+                        CategoryModel::create($name);
                         $thongBao = 'Thêm thành công!';
                         header("Refresh: 1.5; url='?act=admin&admin=categoryList'");
                     }
@@ -28,7 +28,7 @@ final class AdminCategoryController
                 break;
 
             case 'categoryUpdate':
-                $list_category = load_all_category();
+                $list_category = CategoryModel::all();
                 $thongBao = '';
 
                 if (isset($_POST['submit'])) {
@@ -37,9 +37,9 @@ final class AdminCategoryController
                     if ($name === '') {
                         $thongBao = 'Vui lòng điền tên danh mục!';
                     } else {
-                        update_category($id, $name);
+                        CategoryModel::update($id, $name);
                         $thongBao = 'Sửa thành công!';
-                        $list_category = load_all_category();
+                        $list_category = CategoryModel::all();
                         header("Refresh: 1.5; url='?act=admin&admin=categoryList'");
                     }
                 }
@@ -48,7 +48,7 @@ final class AdminCategoryController
                 break;
 
             case 'categoryDelete':
-                delete_category($id);
+                CategoryModel::delete($id);
                 header('Location: ?act=admin&admin=categoryList');
                 exit;
         }

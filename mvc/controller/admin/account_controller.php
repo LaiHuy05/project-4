@@ -5,12 +5,12 @@ final class AdminAccountController
     {
         switch ($admin) {
             case 'accountList':
-                $list_account = load_all_account();
+                $list_account = AccountModel::all();
                 include 'view/admin/account/list.php';
                 break;
 
             case 'accountAdd':
-                $list_role = load_all_role();
+                $list_role = AccountModel::roles();
                 $errors = [];
                 $thongBao = '';
 
@@ -25,7 +25,7 @@ final class AdminAccountController
                         $errors['user'] = 'Vui lòng điền tên tài khoản!';
                     } elseif (strlen($user) < 5) {
                         $errors['user'] = 'Tên tài khoản phải dài ít nhất 5 ký tự!';
-                    } elseif (check_duplicate_account($user)) {
+                    } elseif (AccountModel::usernameExists($user)) {
                         $errors['user'] = 'Tên tài khoản đã tồn tại!';
                     }
 
@@ -35,7 +35,7 @@ final class AdminAccountController
 
                     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                         $errors['email'] = 'Địa chỉ email không hợp lệ!';
-                    } elseif (check_duplicate_email($email)) {
+                    } elseif (AccountModel::emailExists($email)) {
                         $errors['email'] = 'Email đã tồn tại!';
                     }
 
@@ -48,7 +48,7 @@ final class AdminAccountController
                     }
 
                     if (!$errors) {
-                        insert_account($user, $pass, $email, $address, $id_role);
+                        AccountModel::create($user, $pass, $email, $address, $id_role);
                         $thongBao = 'Thêm thành công!';
                         header("Refresh: 1.5; url='?act=admin&admin=accountList'");
                     }
@@ -58,8 +58,8 @@ final class AdminAccountController
                 break;
 
             case 'accountUpdate':
-                $list_role = load_all_role();
-                $account = load_one_account($id);
+                $list_role = AccountModel::roles();
+                $account = AccountModel::find($id);
 
                 if (!$account) {
                     http_response_code(404);
@@ -81,7 +81,7 @@ final class AdminAccountController
                         $errors['user'] = 'Vui lòng điền tên tài khoản!';
                     } elseif (strlen($user) < 5) {
                         $errors['user'] = 'Tên tài khoản phải dài ít nhất 5 ký tự!';
-                    } elseif (check_duplicate_account($user, $id)) {
+                    } elseif (AccountModel::usernameExists($user, $id)) {
                         $errors['user'] = 'Tên tài khoản đã tồn tại!';
                     }
 
@@ -91,7 +91,7 @@ final class AdminAccountController
 
                     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                         $errors['email'] = 'Địa chỉ email không hợp lệ!';
-                    } elseif (check_duplicate_email($email, $id)) {
+                    } elseif (AccountModel::emailExists($email, $id)) {
                         $errors['email'] = 'Email đã tồn tại!';
                     }
 
@@ -104,8 +104,8 @@ final class AdminAccountController
                     }
 
                     if (!$errors) {
-                        update_account($id, $user, $pass, $email, $address, $id_role);
-                        $account = load_one_account($id);
+                        AccountModel::update($id, $user, $pass, $email, $address, $id_role);
+                        $account = AccountModel::find($id);
                         $thongBao = 'Sửa thành công!';
                         header("Refresh: 1.5; url='?act=admin&admin=accountList'");
                     }
@@ -115,7 +115,7 @@ final class AdminAccountController
                 break;
 
             case 'accountDelete':
-                delete_account($id);
+                AccountModel::delete($id);
                 header('Location: ?act=admin&admin=accountList');
                 exit;
         }

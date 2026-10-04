@@ -5,14 +5,14 @@ final class AdminProductMemoryController
     {
         switch ($admin) {
             case 'productMemory-List':
-                $list_product = load_all_product();
-                $list_product_memory = load_all_product_memory();
+                $list_product = ProductModel::all();
+                $list_product_memory = ProductModel::memories();
 
                 include 'view/admin/product/product-memory/list.php';
                 break;
 
             case 'productMemory-Add':
-                $list_product = load_all_product();
+                $list_product = ProductModel::all();
                 $thongBao = '';
                 $thongBaoLoiTen = '';
                 $thongBaoLoiSP = '';
@@ -29,7 +29,7 @@ final class AdminProductMemoryController
                     }
 
                     if ($thongBaoLoiTen === '' && $thongBaoLoiSP === '') {
-                        insert_product_memory($name, $id_sp);
+                        ProductModel::addMemory($name, $id_sp);
                         $thongBao = 'Thêm thành công';
                     }
                 }
@@ -38,7 +38,7 @@ final class AdminProductMemoryController
                 break;
 
             case 'productMemory-Update':
-                $product = load_one_product_memory($id);
+                $product = ProductModel::findMemory($id);
 
                 if (!$product) {
                     http_response_code(404);
@@ -56,7 +56,7 @@ final class AdminProductMemoryController
                     if ($name === '') {
                         $thongBaoLoiTen = 'Vui lòng nhập tên bộ nhớ!';
                     } else {
-                        update_product_memory($id, $name, $id_sp);
+                        ProductModel::updateMemory($id, $name, $id_sp);
                         $pm_name = $name;
                         $thongBao = 'Sửa thành công';
                     }
@@ -67,7 +67,7 @@ final class AdminProductMemoryController
 
             case 'productMemory-Delete':
                 $productId = (int) ($_GET['idsp'] ?? 0);
-                delete_product_memory($id);
+                ProductModel::deleteMemory($id);
                 header('Location: ?act=admin&admin=productDetail&id=' . $productId);
                 exit;
         }
