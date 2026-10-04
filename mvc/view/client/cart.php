@@ -20,9 +20,7 @@ include "nav.php";
         </div>
     <?php } else { ?>
         <?php
-        $productIds = []; // Mảng lưu tất cả ID sản phẩm
         $cartdetailIds = []; // Mảng lưu tất cả ID cartdetail
-        $quantities = []; // Mảng lưu tất cả số lượng sản phẩm
         $totalQuantity = 0; // Tổng số lượng sản phẩm trong giỏ hàng
         foreach ($list_cart as $cart) :
             extract($cart);
@@ -61,9 +59,6 @@ include "nav.php";
                                             $itemTotal = $sp_price * $cd_quantity; // Tổng tiền của sản phẩm
                                             $totalAmount += $itemTotal;
                                             $totalQuantity += $cd_quantity;
-                                            // Lưu ID sản phẩm và số lượng vào mảng
-                                            $productIds[] = $sp_id;
-                                            $quantities[] = $cd_quantity;
                                             $cartdetailIds[] = $cd_id
                             ?>
                                             <div class="box-cart-big-child">
@@ -124,9 +119,8 @@ include "nav.php";
                                     <p>Phí vận chuyển sẽ được tính ở trang thanh toán.</p>
                                     <p>Bạn cũng có thể nhập mã giảm giá ở trang thanh toán.</p>
                                 </div>
-                                <!-- Nút thanh toán -->
                                 <button class="pay">
-                                    <a href="?client=pay&quantity=<?= implode(',', $quantities) ?>&iduser=<?= $id_tk ?>&totalamount=<?= $totalAmount ?>&totalquantity=<?= $totalQuantity ?>&cartdetailid=<?= implode(',', $cartdetailIds) ?>">THANH TOÁN</a>
+                                    <a href="?client=pay&iduser=<?= $id_tk ?>&cartdetailid=<?= implode(',', $cartdetailIds) ?>">THANH TOÁN</a>
                                 </button>
                                 <div class="continue-shopping">
                                     <a style="color: black;" href="?act=client&iduser=<?= $_GET['iduser'] ?>">

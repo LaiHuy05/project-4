@@ -1,13 +1,5 @@
-<?php
-include 'nav.php';
-
-// Kiểm tra nếu session chưa tồn tại, khởi tạo mảng rỗng
-if (!isset($_SESSION['quantity'])) {
-    $_SESSION['quantity'] = [];
-}
-?>
+<?php include 'nav.php'; ?>
 <link rel="stylesheet" href="view/assets/pay.css?v=<?php echo time(); ?>">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="all">
     <div class="address">
         <h4>Địa chỉ nhận hàng</h4>
@@ -148,7 +140,6 @@ if (!isset($_SESSION['quantity'])) {
 
                 <div style="margin-top: 20px;" class="pay-confirm">
                     <a href="#">Giỏ hàng</a>
-                    <!-- Total is now calculated from database values by CheckoutService. -->
                     <button type="submit" name="btnPay" class="button-confirm">
                         Xác nhận thanh toán
                     </button>
@@ -161,7 +152,6 @@ if (!isset($_SESSION['quantity'])) {
         <?php
         foreach ($listAll_product as $index => $product) :
             extract($product);
-            // Lấy các thông tin sản phẩm từ mảng
             if ($sp_id == $_GET['idsp']) {
         ?>
                 <div class="productPay-item">
