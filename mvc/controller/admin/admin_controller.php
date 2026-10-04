@@ -1,19 +1,8 @@
 <?php
-/**
- * Thin admin entry point. Feature actions live in one controller per domain.
- * Existing query-string URLs continue to work.
- */
 $root = dirname(__DIR__, 2);
+
+require_once $root . '/core/bootstrap.php';
 require_once $root . '/core/ActionRouter.php';
-require_once $root . '/query/danh-muc.php';
-require_once $root . '/query/san-pham.php';
-require_once $root . '/query/tai-khoan.php';
-require_once $root . '/query/binh-luan.php';
-require_once $root . '/query/don-hang.php';
-require_once $root . '/query/pdo.php';
-require_once $root . '/query/thong-ke.php';
-require_once $root . '/query/tong-doanh-thu.php';
-require_once $root . '/query/gio-hang.php';
 require_once $root . '/middleware/require_admin.php';
 
 final class AdminRouter
@@ -21,12 +10,17 @@ final class AdminRouter
     public static function run(): void
     {
         require_admin();
+
         $action = $_GET['admin'] ?? 'home';
+
         if (!is_string($action)) {
             http_response_code(400);
             return;
         }
-        $id = isset($_GET['id']) && is_scalar($_GET['id']) ? $_GET['id'] : '';
+
+        $id = isset($_GET['id']) && is_scalar($_GET['id'])
+            ? $_GET['id']
+            : '';
 
         $routes = [
             'home' => [AdminHomeController::class, __DIR__ . '/home_controller.php'],

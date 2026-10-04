@@ -1,29 +1,24 @@
 <?php
-/**
- * Thin client entry point. Feature actions live in one controller per domain.
- * Existing query-string URLs continue to work.
- */
 $root = dirname(__DIR__, 2);
+
+require_once $root . '/core/bootstrap.php';
 require_once $root . '/core/ActionRouter.php';
-require_once $root . '/query/san-pham.php';
-require_once $root . '/query/gio-hang.php';
-require_once $root . '/query/danh-muc.php';
-require_once $root . '/query/tai-khoan.php';
-require_once $root . '/query/don-hang.php';
-require_once $root . '/query/binh-luan.php';
-require_once $root . '/core/Csrf.php';
 
 final class ClientRouter
 {
     public static function run(): void
     {
         $action = $_GET['client'] ?? 'home';
+
         if (!is_string($action)) {
             http_response_code(400);
             return;
         }
+
         $iduser = $_SESSION['user_id'] ?? (
-            isset($_GET['iduser']) && is_scalar($_GET['iduser']) ? $_GET['iduser'] : null
+            isset($_GET['iduser']) && is_scalar($_GET['iduser'])
+                ? $_GET['iduser']
+                : null
         );
 
         $routes = [
