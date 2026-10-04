@@ -1,89 +1,75 @@
 <?php
-/**
- * Admin product memory actions.
- * Database functions remain in mvc/query during this behavior-preserving refactor.
- */
 final class AdminProductMemoryController
 {
     public static function handle(string $admin, $id = null): void
     {
         switch ($admin) {
             case 'productMemory-List':
-                $list_product = load_all_product();
-                $list_product_memory = load_all_product_memory();
-                $list_category = load_all_category();
+                $list_product = ProductModel::all();
+                $list_product_memory = ProductModel::memories();
+
                 include 'view/admin/product/product-memory/list.php';
                 break;
+
             case 'productMemory-Add':
-                $thongBao = "";
+                $list_product = ProductModel::all();
+                $thongBao = '';
                 $thongBaoLoiTen = '';
                 $thongBaoLoiSP = '';
-                $list_product = load_all_product();
-                $list_product_memory = load_all_product_memory();
-                $list_category = load_all_category();
-                if (isset($_POST["submit"])) {
-                    $name = trim($_POST['name']);
-        
-                    $id_sp = trim($_POST['id_sp']);
-        
+
+                if (isset($_POST['submit'])) {
+                    $name = trim((string) ($_POST['name'] ?? ''));
+                    $id_sp = trim((string) ($_POST['id_sp'] ?? ''));
+
                     if ($name === '') {
-                        $thongBaoLoiTen = 'Vui lòng nhập Tên!';
-                    } elseif (strlen($name) < 5) {
-                        $thongBaoLoiTen = 'Tên đăng nhập phải có ít nhất 5 ký tự.';
+                        $thongBaoLoiTen = 'Vui lòng nhập tên bộ nhớ!';
                     }
-        
-        
-                    if ($id_dm === '' || $id_dm === '0') {
-                        $thongBaoLoiSP = 'Vui lòng chọn danh mục!';
+                    if ($id_sp === '' || $id_sp === '0') {
+                        $thongBaoLoiSP = 'Vui lòng chọn sản phẩm!';
                     }
-        
-        
-                    if (
-                        empty($thongBaoLoiTen) &&  empty($thongBaoLoiSP)
-                    ) {
-                        insert_product_memory($name, $id_sp);
-                        $thongBao = "Thêm thành công";
+
+                    if ($thongBaoLoiTen === '' && $thongBaoLoiSP === '') {
+                        ProductModel::addMemory($name, $id_sp);
+                        $thongBao = 'Thêm thành công';
                     }
                 }
-        
+
                 include 'view/admin/product/product-memory/add.php';
                 break;
+
             case 'productMemory-Update':
-                $thongBao = "";
-                $thongBaoLoiTen = '';
-                $thongBaoLoiSP = '';
-                $list_product = load_all_product();
-                $list_product_memory = load_all_product_memory();
-                $product = load_one_product_memory($id);
-                $list_category = load_all_category();
-                $pm_id = $product['pm_id'];
+                $product = ProductModel::findMemory($id);
+
+                if (!$product) {
+                    http_response_code(404);
+                    exit('Bộ nhớ sản phẩm không tồn tại.');
+                }
+
                 $pm_name = $product['pm_name'];
-        
-                $id_sp = $product['id_sp'];
-        
-                // $name = load_one_product($id);
-                if (isset($_POST["submit"])) {
-                    $name = trim($_POST['name']);
-        
-                    $id_sp = $_GET["idsp"];
-                    if (
-                        empty($thongBaoLoiTen) &&  empty($thongBaoLoiSP)
-                    ) {
-                        update_product_memory($id, $name, $id_sp);
-                        $thongBao = "Sửa thành công";
+                $thongBao = '';
+                $thongBaoLoiTen = '';
+
+                if (isset($_POST['submit'])) {
+                    $name = trim((string) ($_POST['name'] ?? ''));
+                    $id_sp = (int) ($_GET['idsp'] ?? $product['id_sp']);
+
+                    if ($name === '') {
+                        $thongBaoLoiTen = 'Vui lòng nhập tên bộ nhớ!';
+                    } else {
+                        ProductModel::updateMemory($id, $name, $id_sp);
+                        $pm_name = $name;
+                        $thongBao = 'Sửa thành công';
                     }
                 }
+
                 include 'view/admin/product/product-memory/update.php';
                 break;
+
             case 'productMemory-Delete':
-        
-                $id_sp = $_GET['idsp'];
-                $pm_id = $_GET['id'];
-                delete_product_memory($id);
-        
-        
-                header("Location: ?act=admin&admin=productDetail&id=$id_sp&idmemory=$pm_id");
-                break;
+                $productId = (int) ($_GET['idsp'] ?? 0);
+                ProductModel::deleteMemory($id);
+                header('Location: ?act=admin&admin=productDetail&id=' . $productId);
+                exit;
         }
     }
 }

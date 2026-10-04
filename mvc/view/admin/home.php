@@ -10,7 +10,7 @@ include 'nav.php';
                     <i class="fas fa-dollar-sign"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-number"><?php if (isset($count_profit)) echo number_format($count_profit[0]['tong_gia'], 0, ',', '.'); ?>đ</span>
+                    <span class="stat-number"><?= number_format($profit, 0, ',', '.') ?>đ</span>
                     <h3 class="stat-number">Doanh Thu</h3>
                 </div>
             </div>
@@ -30,7 +30,7 @@ include 'nav.php';
                     <i class="fas fa-shopping-cart"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-number"><?php if (isset($count_order)) echo $count_order[0]['COUNT(*)']; ?></span>
+                    <span class="stat-number"><?= $orderCount ?></span>
                     <h3 class="stat-number">Đơn Hàng</h3>
                 </div>
             </div>
@@ -50,7 +50,7 @@ include 'nav.php';
                     <i class="fas fa-user-friends"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-number"><?php if (isset($count_account)) echo $count_account[0]['COUNT(*)']; ?></span>
+                    <span class="stat-number"><?= $accountCount ?></span>
                     <h3 class="stat-number">Tài Khoản</h3>
                 </div>
             </div>
@@ -70,7 +70,7 @@ include 'nav.php';
                     <i class="fas fa-list"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-number"><?php if (isset($count_category)) echo $count_category[0]['COUNT(*)']; ?></span>
+                    <span class="stat-number"><?= $categoryCount ?></span>
                     <h3 class="stat-number">Danh Mục</h3>
                 </div>
             </div>
@@ -92,7 +92,7 @@ include 'nav.php';
                     <i class="fas fa-box"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-number"><?php if (isset($count_product)) echo $count_product[0]['COUNT(*)']; ?></span>
+                    <span class="stat-number"><?= $productCount ?></span>
                     <h3 class="stat-number">Sản Phẩm</h3>
                 </div>
             </div>
@@ -129,78 +129,25 @@ include 'nav.php';
     </div>
 
     <script>
-        window.onload = function() {
-            const barsContainer = document.getElementById('bars');
-            const fixedData = [{
-                    month: "Tháng 1",
-                    revenue: <?php echo isset($doanh_thu_thang_1) ? $doanh_thu_thang_1 : 0; ?>
-                },
-                {
-                    month: "Tháng 2",
-                    revenue: <?php echo isset($doanh_thu_thang_2) ? $doanh_thu_thang_2 : 0; ?>
-                },
-                {
-                    month: "Tháng 3",
-                    revenue: <?php echo isset($doanh_thu_thang_3) ? $doanh_thu_thang_3 : 0; ?>
-                },
-                {
-                    month: "Tháng 4",
-                    revenue: <?php echo isset($doanh_thu_thang_4) ? $doanh_thu_thang_4 : 0; ?>
-                },
-                {
-                    month: "Tháng 5",
-                    revenue: <?php echo isset($doanh_thu_thang_5) ? $doanh_thu_thang_5 : 0; ?>
-                },
-                {
-                    month: "Tháng 6",
-                    revenue: <?php echo isset($doanh_thu_thang_6) ? $doanh_thu_thang_6 : 0; ?>
-                },
-                {
-                    month: "Tháng 7",
-                    revenue: <?php echo isset($doanh_thu_thang_7) ? $doanh_thu_thang_7 : 0; ?>
-                },
-                {
-                    month: "Tháng 8",
-                    revenue: <?php echo isset($doanh_thu_thang_8) ? $doanh_thu_thang_8 : 0; ?>
-                },
-                {
-                    month: "Tháng 9",
-                    revenue: <?php echo isset($doanh_thu_thang_9) ? $doanh_thu_thang_9 : 0; ?>
-                },
-                {
-                    month: "Tháng 10",
-                    revenue: <?php echo isset($doanh_thu_thang_10) ? $doanh_thu_thang_10 : 0; ?>
-                },
-                {
-                    month: "Tháng 11",
-                    revenue: <?php echo isset($doanh_thu_thang_11) ? $doanh_thu_thang_11 : 0; ?>
-                },
-                {
-                    month: "Tháng 12",
-                    revenue: <?php echo isset($doanh_thu_thang_12) ? $doanh_thu_thang_12 : 0; ?>
-                },
-            ];
-            const maxRevenue = 1000000000; // 1 tỷ
-            const minRevenue = 0; // Bắt đầu từ 0
+        const monthlyRevenue = <?= json_encode(array_values($monthlyRevenue), JSON_NUMERIC_CHECK) ?>;
+        const barsContainer = document.getElementById('bars');
+        const maxRevenue = 1000000000;
 
-            fixedData.forEach(data => {
-                const heightPercentage = (data.revenue / maxRevenue) * 100;
+        monthlyRevenue.forEach((revenue, index) => {
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.style.height = `${(revenue / maxRevenue) * 100}%`;
 
-                const bar = document.createElement('div');
-                bar.className = 'bar';
-                bar.style.height = `${heightPercentage}%`;
+            const label = document.createElement('span');
+            label.textContent = `${(revenue / 1000000).toFixed(0)}M`;
+            bar.appendChild(label);
 
-                const label = document.createElement('span');
-                label.textContent = `${(data.revenue / 1000000).toFixed(0)}M`; // Hiển thị triệu đồng
-                bar.appendChild(label);
+            const monthLabel = document.createElement('label');
+            monthLabel.textContent = `Tháng ${index + 1}`;
+            bar.appendChild(monthLabel);
 
-                const monthLabel = document.createElement('label');
-                monthLabel.textContent = data.month;
-                bar.appendChild(monthLabel);
-
-                barsContainer.appendChild(bar);
-            });
-        };
+            barsContainer.appendChild(bar);
+        });
     </script>
     <!-- -------------------------------------------------------------------------------------->
 
@@ -235,28 +182,5 @@ include 'nav.php';
             </table>
         </div>
         <br>
-        <!-- Bảng thống kê doanh thu theo tháng -->
-        <!-- <div class="table-container">
-            <h2>Doanh Thu Theo Tháng</h2>
-            <table class="table table-bordered table-hover">
-                <thead class="thead-light">
-                    <tr>
-                        <th>Tháng</th>
-                        <th>Năm</th>
-                        <th>Tổng Doanh thu</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($report_totalamount as $value) {
-                        extract($value); ?>
-                        <tr>
-                            <td><?= $thang; ?></td>
-                            <td><?= $nam; ?></td>
-                            <td><?= number_format($tong_doanh_thu, 0, ',', '.') ?> VNĐ</td>
-                        </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
-        </div> -->
     </div>
 </article>

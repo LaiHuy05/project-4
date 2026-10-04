@@ -1,13 +1,5 @@
-<?php
-include 'nav.php';
-
-// Kiểm tra nếu session chưa tồn tại, khởi tạo mảng rỗng
-if (!isset($_SESSION['quantity'])) {
-    $_SESSION['quantity'] = [];
-}
-?>
+<?php include 'nav.php'; ?>
 <link rel="stylesheet" href="view/assets/pay.css?v=<?php echo time(); ?>">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="all">
     <div class="address">
         <h4>Địa chỉ nhận hàng</h4>
@@ -158,16 +150,11 @@ if (!isset($_SESSION['quantity'])) {
     <div class="productPay">
         <h4>Sản phẩm trong giỏ hàng</h4>
         <?php
-        // Giả sử list_products là mảng chứa các sản phẩm trong giỏ hàng
-        // Lấy số lượng sản phẩm từ URL hoặc từ mảng
-        $quantities = array_column($list_cartDetail, 'cd_quantity');
 
         foreach ($listAll_product as $index => $product) {
-            extract($product); // Lấy các thông tin sản phẩm từ mảng
-            // $quantity = isset($quantities[$index]) ? $quantities[$index] : 0; // Số lượng của sản phẩm
+            extract($product);
             foreach ($list_cartDetail as $item) : extract($item);
                 foreach ($arrayID as $idcd):
-                    // echo $sidcd;
                     if ($cd_id == $idcd) {
                         if ($sp_id == $id_sp) {
         ?>
@@ -189,10 +176,7 @@ if (!isset($_SESSION['quantity'])) {
                     }
                 endforeach ?>
             <?php endforeach ?>
-        <?php } // Lặp qua các sản phẩm và lưu số lượng vào session
-        foreach ($quantities as $index => $quantity) {
-            $_SESSION['quantity'][$index] = $quantity; // Lưu số lượng theo index
-        } ?>
+        <?php } ?>
 
         <div class="productPay-summary">
             <h4>Tổng Số Lượng: <?= $sp_quantity ?></h4>

@@ -1,53 +1,56 @@
 <?php
-/**
- * Admin category actions.
- * Database functions remain in mvc/query during this behavior-preserving refactor.
- */
 final class AdminCategoryController
 {
     public static function handle(string $admin, $id = null): void
     {
         switch ($admin) {
             case 'categoryList':
-                $list_category = load_all_category();
+                $list_category = CategoryModel::all();
                 include 'view/admin/category/list.php';
                 break;
+
             case 'categoryAdd':
                 $thongBao = '';
+
                 if (isset($_POST['submit'])) {
-                    $name = trim($_POST['name']);
-                    if ($name == '') {
-                        $thongBao = 'vui lòng điền tên danh mục!';
+                    $name = trim((string) ($_POST['name'] ?? ''));
+
+                    if ($name === '') {
+                        $thongBao = 'Vui lòng điền tên danh mục!';
                     } else {
-                        insert_category($name);
-                        $thongBao = "thêm thành công!";
+                        CategoryModel::create($name);
+                        $thongBao = 'Thêm thành công!';
                         header("Refresh: 1.5; url='?act=admin&admin=categoryList'");
                     }
                 }
+
                 include 'view/admin/category/add.php';
                 break;
-            case 'categoryDelete':
-                delete_category($id);
-                header("location: ?act=admin&admin=categoryList");
-                break;
+
             case 'categoryUpdate':
-                $list_category = load_all_category();
-        
+                $list_category = CategoryModel::all();
                 $thongBao = '';
-                $name = load_one_category($id);
+
                 if (isset($_POST['submit'])) {
-                    $name = trim($_POST['name']);
-                    if ($name == '') {
-                        $thongBao = 'vui lòng điền tên danh mục!';
+                    $name = trim((string) ($_POST['name'] ?? ''));
+
+                    if ($name === '') {
+                        $thongBao = 'Vui lòng điền tên danh mục!';
                     } else {
-                        update_category($id, $name);
-                        $thongBao = "Sửa thành công!";
+                        CategoryModel::update($id, $name);
+                        $thongBao = 'Sửa thành công!';
+                        $list_category = CategoryModel::all();
                         header("Refresh: 1.5; url='?act=admin&admin=categoryList'");
                     }
                 }
+
                 include 'view/admin/category/update.php';
-                // header("location: ?act=admin&admin=categoryList");
                 break;
+
+            case 'categoryDelete':
+                CategoryModel::delete($id);
+                header('Location: ?act=admin&admin=categoryList');
+                exit;
         }
     }
 }

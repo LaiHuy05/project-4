@@ -1,96 +1,75 @@
 <?php
-/**
- * Admin product color actions.
- * Database functions remain in mvc/query during this behavior-preserving refactor.
- */
 final class AdminProductColorController
 {
     public static function handle(string $admin, $id = null): void
     {
         switch ($admin) {
             case 'productColor-List':
-                $list_product = load_all_product();
-                $list_product_color = load_all_product_color();
-                $list_category = load_all_category();
-                include 'product/product-color/list.php';
+                $list_product = ProductModel::all();
+                $list_product_color = ProductModel::colors();
+
+                include 'view/admin/product/product-color/list.php';
                 break;
+
             case 'productColor-Add':
-                $thongBao = "";
+                $list_product = ProductModel::all();
+                $thongBao = '';
                 $thongBaoLoiTen = '';
                 $thongBaoLoiSP = '';
-                $list_product = load_all_product();
-                $list_product_color = load_all_product_color();
-                $list_category = load_all_category();
-                if (isset($_POST["submit"])) {
-                    $name = trim($_POST['name']);
-        
-                    $id_sp = trim($_POST['id_sp']);
-        
+
+                if (isset($_POST['submit'])) {
+                    $name = trim((string) ($_POST['name'] ?? ''));
+                    $id_sp = trim((string) ($_POST['id_sp'] ?? ''));
+
                     if ($name === '') {
-                        $thongBaoLoiTen = 'Vui lòng nhập Tên!';
-                    } elseif (strlen($name) < 5) {
-                        $thongBaoLoiTen = 'Tên đăng nhập phải có ít nhất 5 ký tự.';
+                        $thongBaoLoiTen = 'Vui lòng nhập tên màu!';
                     }
-        
-        
                     if ($id_sp === '' || $id_sp === '0') {
-                        $thongBaoLoiSP = 'Vui lòng chọn danh mục!';
+                        $thongBaoLoiSP = 'Vui lòng chọn sản phẩm!';
                     }
-        
-        
-                    if (
-                        empty($thongBaoLoiTen) &&  empty($thongBaoLoiSP)
-                    ) {
-                        insert_product_color($name, $id_sp);
-                        $thongBao = "Thêm thành công";
+
+                    if ($thongBaoLoiTen === '' && $thongBaoLoiSP === '') {
+                        ProductModel::addColor($name, $id_sp);
+                        $thongBao = 'Thêm thành công';
                     }
                 }
+
                 include 'view/admin/product/product-color/add.php';
                 break;
+
             case 'productColor-Update':
-                $thongBao = "";
-                $thongBaoLoiTen = '';
-                $thongBaoLoiSP = '';
-                $list_product = load_all_product();
-                $list_product_color = load_all_product_color();
-        
-                $product_color = load_one_product_color($id);
-                $list_category = load_all_category();
-                $pc_id = $product_color['pc_id'];
+                $product_color = ProductModel::findColor($id);
+
+                if (!$product_color) {
+                    http_response_code(404);
+                    exit('Màu sản phẩm không tồn tại.');
+                }
+
                 $pc_name = $product_color['pc_name'];
-        
-        
-        
-                // $name = load_one_product($id);
-                if (isset($_POST["submit"])) {
-                    $name = trim($_POST['name']);
-                    $id_sp = $_GET["idsp"];
-        
-        
-        
-        
-        
-                    if (
-                        empty($thongBaoLoiTen) &&  empty($thongBaoLoiSP)
-                    ) {
-                        update_product_color($id, $name, $id_sp);
-        
-                        $thongBao = "Sửa thành công";
+                $thongBao = '';
+                $thongBaoLoiTen = '';
+
+                if (isset($_POST['submit'])) {
+                    $name = trim((string) ($_POST['name'] ?? ''));
+                    $id_sp = (int) ($_GET['idsp'] ?? $product_color['id_sp']);
+
+                    if ($name === '') {
+                        $thongBaoLoiTen = 'Vui lòng nhập tên màu!';
+                    } else {
+                        ProductModel::updateColor($id, $name, $id_sp);
+                        $pc_name = $name;
+                        $thongBao = 'Sửa thành công';
                     }
                 }
+
                 include 'view/admin/product/product-color/update.php';
                 break;
+
             case 'productColor-Delete':
-        
-        
-        
-                $id_sp = $_GET['idsp'];
-                $pc_id = $_GET['id'];
-        
-                delete_product_color($id);
-                header("Location: ?act=admin&admin=productDetail&id=$id_sp&idcolor=$pc_id");
-        
-                break;
+                $productId = (int) ($_GET['idsp'] ?? 0);
+                ProductModel::deleteColor($id);
+                header('Location: ?act=admin&admin=productDetail&id=' . $productId);
+                exit;
         }
     }
 }

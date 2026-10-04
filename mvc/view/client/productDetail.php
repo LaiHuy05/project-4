@@ -118,14 +118,15 @@ include "nav.php";
                         </div>
 
                         <div class="content-two">
-                            <form action="" method="get">
+                            <form action="?client=cartdetail" method="POST">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Csrf::token(), ENT_QUOTES, 'UTF-8') ?>">
                                 <div style="margin-bottom: 10px;"><span class="price-sale"
                                         style="color: #D70018; padding-right: 10px;"><?= printPrice($sp_price)  ?></span><span><del
                                             style="color: gray;">36.990.00đ</del></span></div>
                                 <div style="margin-bottom: 10px;">Thương hiệu: <span style="font-weight: bold;"><?= $dm_name ?></span></div>
                                 <div style="margin-bottom: 10px;">Bộ Nhớ:</div>
                                 <div class="letter-one-dad">
-                                    <input type="hidden" name="client" value="cartdetail">
+                                    
                                     <?php
                                     $isFirstMemory = true;
                                     foreach ($list_product_memory as $index => $product): extract($product);
@@ -186,16 +187,6 @@ include "nav.php";
                                     </div>
                                 <?php } else { ?>
                                     <div class="letter-product">
-
-                                        <?php $idgh = 0;
-                                        foreach ($list_cart as $cart) {
-                                            extract($cart);
-                                            if ($_GET['iduser'] == $id_tk) {
-                                                $idgh = $gh_id;
-                                                break;
-                                            }
-                                        }
-                                        ?>
                                         <div class="letter-two-dad">
                                             <input type="hidden" name="id" value="<?= $_GET['id'] ?>">
                                             <input type="hidden" name="idgh" value="<?= $idgh ?>">
@@ -225,7 +216,7 @@ include "nav.php";
                                     <input type="hidden" name="optionb" id="optionb">
                                     <input type="hidden" name="optioncolorb" id="optioncolorb">
                                     <input type="hidden" name="idsp" value="<?= $_GET['id'] ?>">
-                                    <input type="hidden" name="iduser" value="<?= $_GET['iduser'] ?>">
+                                    <input type="hidden" name="iduser" value="<?= (int) ($iduser ?? 0) ?>">
                                     <input type="hidden" name="quantity" id="quantity">
                                     <button style="color: white;" type="submit" onclick="passOptionValue()">
                                         <div class="letter-two">

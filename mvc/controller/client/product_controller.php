@@ -1,46 +1,61 @@
 <?php
-/**
- * Client product actions.
- * Database functions remain in mvc/query during this behavior-preserving refactor.
- */
 final class ClientProductController
 {
     public static function handle(string $client, $iduser = null): void
     {
+        $list_category = CategoryModel::all();
+
         switch ($client) {
-          case 'detail':
-              $list_cartDetail = load_all_cartDetail();
-              $list_comment = load_all_comment();
-              $list_category = load_all_category();
-              $listAll_product = load_all_product();
-              $list_account = load_all_account(); // Lấy dữ liệu từ CSDL
-              $list_cart = load_all_cart();
-              $list_product_color = load_all_product_color();
-              $list_product_memory = load_all_product_memory();
-              include 'view/client/productDetail.php';
-              break;
-          case 'categoryShow':
-              $list_account = load_all_account(); // Lấy dữ liệu từ CSDL
-              $list_category = load_all_category();
-              $listAll_product = load_all_product();
-              $list_cart = load_all_cart();
-        
-              include 'view/client/category.php';
-              break;
-          case 'search':
-              $list_category = load_all_category();
-        
-              $list_account = load_all_account(); // Lấy dữ liệu từ CSDL
-              $productTM = [];
-              $listAll_product = load_all_product();
-              foreach ($listAll_product as $name) {
-                  extract($name);
-                  if (stripos(strtolower($sp_name), strtolower($_GET['search'])) !== false) {
-                      $productTM[] = $name;
-                  }
-              }
-              include 'view/client/homeSearch.php';
-              break;
+            case 'detail':
+                $list_comment = CommentModel::all();
+                $listAll_product = ProductModel::all();
+                $list_product_color = ProductModel::colors();
+                $list_product_memory = ProductModel::memories();
+
+                $idgh = 0;
+                if (isset($_SESSION['user_id']) && is_numeric($_SESSION['user_id'])) {
+                    $userId = (int) $_SESSION['user_id'];
+                    $idgh = CartModel::findIdForUser($userId);
+
+                    if ($idgh === null) {
+                        CartModel::create($userId);
+                        $idgh = CartModel::findIdForUser($userId);
+                    }
+                }
+
+                include 'view/client/productDetail.php';
+                break;
+
+            case 'categoryShow':
+                $listAll_product = ProductModel::all();
+                include 'view/client/category.php';
+                break;
+
+            case 'search':
+                $keyword = trim((string) ($_GET['search'] ?? ''));
+                $sort = (string) ($_GET['sort'] ?? '');
+
+                $listAll_product = ProductModel::all();
+                $productTM = [];
+
+                foreach ($listAll_product as $product) {
+                    if ($keyword === '' || stripos($product['sp_name'], $keyword) !== false) {
+                        $productTM[] = $product;
+                    }
+                }
+
+                if ($sort === 'asc') {
+                    usort($productTM, function ($a, $b) {
+                        return $a['sp_price'] <=> $b['sp_price'];
+                    });
+                } elseif ($sort === 'desc') {
+                    usort($productTM, function ($a, $b) {
+                        return $b['sp_price'] <=> $a['sp_price'];
+                    });
+                }
+
+                include 'view/client/homeSearch.php';
+                break;
         }
     }
 }
